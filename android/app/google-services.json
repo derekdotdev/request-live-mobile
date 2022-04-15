@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "710187779682",
+    "project_id": "request-live-4864a",
+    "storage_bucket": "request-live-4864a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:710187779682:android:e2b168eb862178f7c2733b",
+        "android_client_info": {
+          "package_name": "com.derekdileo.request_live"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "710187779682-onsq1fobbp9ie46dk4lq2maqglckvcfg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAGZpEFdUbKIDBNnm0g1R_y4eCK3dMOws4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "710187779682-onsq1fobbp9ie46dk4lq2maqglckvcfg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "710187779682-bar5cjrcblfe0pat3udg5uojej3u1j7a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.derekdileo.requestLive"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
