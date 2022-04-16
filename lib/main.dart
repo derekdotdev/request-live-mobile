@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import './screens/auth_screen.dart';
+import './screens/welcome_screen.dart';
+import './screens/splash_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,45 +21,39 @@ class MyApp extends StatelessWidget {
     return FutureBuilder(
       // Initialize FlutterFire
       future: _initialization,
-      builder: (context, snapshot) {
-        // Check for errors
-        if (snapshot.hasError) {
-          print('Something went wrong');
-          return Scaffold(
-            body: Center(
-              child: Text(
-                snapshot.error.toString(),
+      builder: (context, appSnapshot) {
+        return MaterialApp(
+          title: 'Request Live Music',
+          theme: ThemeData(
+            primarySwatch: Colors.purple,
+            backgroundColor: Colors.white,
+            primaryColor: Colors.purple,
+            buttonTheme: ButtonTheme.of(context).copyWith(
+              buttonColor: Colors.purple,
+              textTheme: ButtonTextTheme.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
               ),
             ),
-          );
-        }
-
-        // Once complete, show application
-        if (snapshot.connectionState == ConnectionState.done) {
-          return MaterialApp(
-            title: 'Request Live Music',
-            theme: ThemeData(
-              primarySwatch: Colors.purple,
-              backgroundColor: Colors.white,
-              primaryColor: Colors.purple,
-              buttonTheme: ButtonTheme.of(context).copyWith(
-                buttonColor: Colors.purple,
-                textTheme: ButtonTextTheme.primary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+          ),
+          home: appSnapshot.connectionState != ConnectionState.done
+              ? SplashScreen()
+              : StreamBuilder(
+                  stream: FirebaseAuth.instance.authStateChanges(),
+                  builder: (ctx, userSnapshot) {
+                    if (userSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return SplashScreen();
+                    }
+                    if (userSnapshot.hasData) {
+                      return WelcomeScreen();
+                    }
+                    return AuthScreen();
+                  },
                 ),
-              ),
-            ),
-            home: AuthScreen(),
-            routes: {
-              AuthScreen.routeName: (ctx) => AuthScreen(),
-            },
-          );
-        }
-
-        // Otherwise, show spinner while waiting
-        return const Center(
-          child: CircularProgressIndicator(),
+          routes: {
+            AuthScreen.routeName: (ctx) => AuthScreen(),
+          },
         );
       },
     );

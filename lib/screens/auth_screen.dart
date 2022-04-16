@@ -17,6 +17,32 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   final _auth = FirebaseAuth.instance;
+  final List<String> _userNamesInUse = [];
+  var _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchExistingUserNames();
+  }
+
+  Future<void> _fetchExistingUserNames() async {
+    print('_getUserNamesInUse Called...');
+
+    setState(() {
+      _isLoading = true;
+    });
+    await FirebaseFirestore.instance.collection('users').get().then(
+          (querySnapshot) => {
+            querySnapshot.docs.forEach((doc) {
+              _userNamesInUse.add(doc['username']);
+            }),
+          },
+        );
+    setState(() {
+      _isLoading = false;
+    });
+  }
 
   // Submit function to pass in to auth_form
   void _submitAuthForm(
@@ -30,6 +56,9 @@ class _AuthScreenState extends State<AuthScreen> {
     UserCredential userCredential;
 
     try {
+      setState(() {
+        _isLoading = true;
+      });
       if (isLogin) {
         // Log in existing user
         userCredential = await _auth.signInWithEmailAndPassword(
@@ -52,8 +81,8 @@ class _AuthScreenState extends State<AuthScreen> {
 
         // Create firebase doc with username.
         // Later used to validate usernames and create routes
-        // TODO figure out how to iterate over all 'users' to search for attached username
-        // TODO this way, the collection below is not necessary...
+        // TODO Replace below with simple username table.
+        // TODO This table needs to be made available to !auth in order to validate usernames
         await FirebaseFirestore.instance
             .collection('usernames')
             .doc(username)
@@ -78,8 +107,14 @@ class _AuthScreenState extends State<AuthScreen> {
           backgroundColor: Theme.of(ctx).errorColor,
         ),
       );
+      setState(() {
+        _isLoading = false;
+      });
     } catch (err) {
       print(err);
+      setState(() {
+        _isLoading = true;
+      });
     }
   }
 
@@ -89,6 +124,8 @@ class _AuthScreenState extends State<AuthScreen> {
       // backgroundColor: Theme.of(context).primaryColor,
       body: AuthForm(
         _submitAuthForm,
+        _userNamesInUse,
+        _isLoading,
       ),
     );
   }
