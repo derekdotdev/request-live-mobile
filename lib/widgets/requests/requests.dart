@@ -14,7 +14,7 @@ class Requests extends StatelessWidget {
       stream: FirebaseFirestore.instance
           .collection('requests')
           .orderBy(
-            'createdAt',
+            'timestamp',
             descending: true,
           )
           .snapshots(),
@@ -36,6 +36,7 @@ class Requests extends StatelessWidget {
             requestDocs[index].data()['title'],
             requestDocs[index].data()['notes'],
             requestDocs[index].data()['username'],
+            requestDocs[index].data()['userEmail'],
             requestDocs[index].data()['userId'] == user?.uid,
             requestDocs[index].data()['entertainerId'],
             key: ValueKey(requestDocs[index].id),

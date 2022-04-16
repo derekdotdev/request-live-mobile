@@ -135,7 +135,7 @@ class _AuthFormState extends State<AuthForm> {
                       },
                       decoration: const InputDecoration(labelText: 'Username'),
                       onSaved: (value) {
-                        _userName = value!;
+                        _userName = value!.toLowerCase();
                       },
                     ),
                   // Password
