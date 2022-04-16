@@ -60,7 +60,7 @@ class MyApp extends StatelessWidget {
             AuthScreen.routeName: (ctx) => AuthScreen(),
             WelcomeScreen.routeName: (ctx) => WelcomeScreen(),
             SearchScreen.routeName: (ctx) => SearchScreen(),
-            // '/entertainers/${id}': (ctx) => EntertainerScreen(),
+            EntertainerScreen.routeName: (ctx) => EntertainerScreen(),
           },
         );
       },

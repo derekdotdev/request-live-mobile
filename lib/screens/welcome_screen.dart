@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:request_live/screens/entertainer_screen.dart';
 
 import '../widgets/app_drawer.dart';
 
@@ -69,6 +70,18 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               entertainerFound ? Colors.green : Theme.of(context).errorColor,
         ),
       );
+
+      if (entertainerFound) {
+        const uid = 'uid';
+        Navigator.pushNamed(
+          context,
+          EntertainerScreen.routeName,
+          arguments: EntertainerScreenArgs(
+            uid,
+            _entertainerSearch.trim(),
+          ),
+        );
+      }
     }
   }
 
