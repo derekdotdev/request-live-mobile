@@ -50,9 +50,14 @@ class _AuthScreenState extends State<AuthScreen> {
           },
         );
 
-        // If a DJ, create firebase doc with username for
-        // later use (validate usernames and create routes)
-        await FirebaseFirestore.instance.collection('djs').doc(username).set(
+        // Create firebase doc with username.
+        // Later used to validate usernames and create routes
+        // TODO figure out how to iterate over all 'users' to search for attached username
+        // TODO this way, the collection below is not necessary...
+        await FirebaseFirestore.instance
+            .collection('usernames')
+            .doc(username)
+            .set(
           {
             'uid': userCredential.user!.uid,
             'username': username,

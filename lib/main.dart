@@ -37,8 +37,8 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
             title: 'Request Live Music',
             theme: ThemeData(
-              // primarySwatch: Colors.purple,
-              // backgroundColor: Colors.white,
+              primarySwatch: Colors.purple,
+              backgroundColor: Colors.white,
               primaryColor: Colors.purple,
               buttonTheme: ButtonTheme.of(context).copyWith(
                 buttonColor: Colors.purple,
@@ -56,7 +56,7 @@ class MyApp extends StatelessWidget {
         }
 
         // Otherwise, show spinner while waiting
-        return Center(
+        return const Center(
           child: CircularProgressIndicator(),
         );
       },
