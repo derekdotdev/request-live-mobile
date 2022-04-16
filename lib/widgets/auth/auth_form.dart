@@ -1,9 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class AuthForm extends StatefulWidget {
   // Submit auth form function passed form auth_screen
-  final void Function(String email, String password, String userName,
-      bool isLogin, BuildContext ctx) submitFn;
+  final void Function(
+    String email,
+    String password,
+    String userName,
+    bool isLogin,
+    bool isDj,
+    BuildContext ctx,
+  ) submitFn;
 
   AuthForm(this.submitFn);
 
@@ -14,6 +21,7 @@ class AuthForm extends StatefulWidget {
 class _AuthFormState extends State<AuthForm> {
   final _formKey = GlobalKey<FormState>();
   var _isLogin = true;
+  var _isDj = false;
 
   var _userEmail = '';
   var _userName = '';
@@ -33,6 +41,7 @@ class _AuthFormState extends State<AuthForm> {
         _userPassword.trim(),
         _userName.trim(),
         _isLogin,
+        _isDj,
         context,
       );
     }
@@ -54,6 +63,28 @@ class _AuthFormState extends State<AuthForm> {
                 // Only take as much size as necessary
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  if (!_isLogin)
+                    Container(
+                      child: Column(
+                        children: [
+                          Text(_isDj
+                              ? 'I am an Entertainer'
+                              : 'I want to make song requests'),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          Switch.adaptive(
+                            activeColor: Colors.purple,
+                            value: _isDj,
+                            onChanged: (val) {
+                              setState(() {
+                                _isDj = val;
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
                   // Email
                   TextFormField(
                     key: const ValueKey('email'),
@@ -64,9 +95,8 @@ class _AuthFormState extends State<AuthForm> {
                       return null;
                     },
                     keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                      labelText: 'Email address',
-                    ),
+                    decoration:
+                        const InputDecoration(labelText: 'Email address'),
                     onSaved: (value) {
                       _userEmail = value!;
                     },
@@ -76,6 +106,13 @@ class _AuthFormState extends State<AuthForm> {
                     TextFormField(
                       key: const ValueKey('username'),
                       validator: (value) {
+                        if (FirebaseFirestore.instance
+                                .collection('djs')
+                                .doc(value)
+                                .id ==
+                            value) {
+                          return 'This username already exists. Please pick another';
+                        }
                         if (value!.isEmpty || value.length < 4) {
                           return 'Please enter at least 4 characters.';
                         }
@@ -105,8 +142,17 @@ class _AuthFormState extends State<AuthForm> {
                     height: 12,
                   ),
                   TextButton(
-                    child: Text(_isLogin ? 'Log In' : 'Sign Up'),
+                    child: Text(
+                      _isLogin
+                          ? 'Log In'
+                          : (!_isDj
+                              ? 'Sign Up For Free'
+                              : 'Sign Up As Entertainer'),
+                    ),
                     onPressed: _trySubmit,
+                  ),
+                  const SizedBox(
+                    height: 12,
                   ),
                   TextButton(
                     child: Text(_isLogin

@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/services.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../widgets/auth/auth_form.dart';
 
@@ -19,19 +19,48 @@ class _AuthScreenState extends State<AuthScreen> {
   final _auth = FirebaseAuth.instance;
 
   // Submit function to pass in to auth_form
-  void _submitAuthForm(String email, String password, String username,
-      bool isLogin, BuildContext ctx) async {
+  void _submitAuthForm(
+    String email,
+    String password,
+    String username,
+    bool isLogin,
+    bool isDj,
+    BuildContext ctx,
+  ) async {
     UserCredential userCredential;
 
     try {
       if (isLogin) {
+        // Log in existing user
         userCredential = await _auth.signInWithEmailAndPassword(
             email: email, password: password);
       } else {
+        // Create new user
         userCredential = await _auth.createUserWithEmailAndPassword(
             email: email, password: password);
+
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .set(
+          {
+            'username': username,
+            'email': email,
+            'isDj': isDj,
+          },
+        );
+
+        // If a DJ, create firebase doc with username for
+        // later use (validate usernames and create routes)
+        await FirebaseFirestore.instance.collection('djs').doc(username).set(
+          {
+            'uid': userCredential.user!.uid,
+            'username': username,
+            'email': email,
+          },
+        );
       }
-    } on PlatformException catch (err) {
+    } on FirebaseAuthException catch (err) {
       String message = 'An error occurred, please check your credentials!';
 
       if (err.message != null) {
@@ -52,7 +81,7 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
+      // backgroundColor: Theme.of(context).primaryColor,
       body: AuthForm(
         _submitAuthForm,
       ),
