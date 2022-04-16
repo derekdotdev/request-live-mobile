@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
+import 'package:request_live/screens/entertainer_screen.dart';
 
 import './screens/auth_screen.dart';
-import './screens/welcome_screen.dart';
-import './screens/splash_screen.dart';
+import './screens/entertainer_screen.dart';
 import './screens/search_screen.dart';
+import './screens/splash_screen.dart';
+import './screens/welcome_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -58,6 +60,7 @@ class MyApp extends StatelessWidget {
             AuthScreen.routeName: (ctx) => AuthScreen(),
             WelcomeScreen.routeName: (ctx) => WelcomeScreen(),
             SearchScreen.routeName: (ctx) => SearchScreen(),
+            // '/entertainers/${id}': (ctx) => EntertainerScreen(),
           },
         );
       },

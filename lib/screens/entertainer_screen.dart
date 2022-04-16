@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import '../widgets/app_drawer.dart';
 
 class EntertainerScreen extends StatefulWidget {
-  const EntertainerScreen({Key? key}) : super(key: key);
-
   @override
   State<EntertainerScreen> createState() => _EntertainerScreenState();
 }
