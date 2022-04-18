@@ -15,21 +15,34 @@ class WelcomeScreen extends StatefulWidget {
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
   final _formKey = GlobalKey<FormState>();
-  final List<String> _entertainerIds = [];
   final Map<String, String> _entertainers = {};
+
+  var _isInit = true;
   var _isLoading = false;
+  var _entertainerId = '';
   var _entertainerSearch = '';
-  var count = 1;
 
   @override
   void initState() {
     super.initState();
-    fetchEntertainers();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Only load entertainer usernames at first login
+    // TODO this may cause problems later..consider provider.of<Entertainer>(ctx)
+    if (_isInit) {
+      fetchEntertainerUserNames();
+    }
+
+    _isInit = false;
   }
 
   // Get list of entertainers from database
   // TODO There has to be a better way...Right?
-  Future<void> fetchEntertainers() async {
+  Future<void> fetchEntertainerUserNames() async {
     setState(() {
       _isLoading = true;
     });
@@ -41,7 +54,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   {
                     _entertainers.putIfAbsent(
                         doc.id, () => doc.data()['username']),
-                    print('Entertainer #${count++}'),
                     print(doc.data()['username'].toString()),
                   },
               },
@@ -53,7 +65,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   }
 
   // Submit search function
-  void _trySubmit() {
+  void _trySubmitEntertainerSearch() {
     final isValid = _formKey.currentState!.validate();
 
     if (isValid) {
@@ -61,24 +73,25 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       var entertainerFound =
           _entertainers.containsValue(_entertainerSearch.trim().toLowerCase());
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(entertainerFound
-              ? 'Next stop: Request page!'
-              : 'Unable to find an entertainer with that name. Please try again...'),
-          backgroundColor:
-              entertainerFound ? Colors.green : Theme.of(context).errorColor,
-        ),
-      );
-
       if (entertainerFound) {
-        const uid = 'uid';
+        // Get entertainer uid for entertainer name
+        _entertainerId = _entertainers.keys
+            .firstWhere((k) => _entertainers[k] == _entertainerSearch);
+
         Navigator.pushNamed(
           context,
           EntertainerScreen.routeName,
           arguments: EntertainerScreenArgs(
-            uid,
+            _entertainerId,
             _entertainerSearch.trim(),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+                'Unable to find an entertainer with that name. Please try again...'),
+            backgroundColor: Theme.of(context).errorColor,
           ),
         );
       }
@@ -167,7 +180,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         ),
                         TextButton(
                           child: const Text('Search'),
-                          onPressed: _trySubmit,
+                          onPressed: _trySubmitEntertainerSearch,
                         ),
                       ],
                     ),

@@ -13,31 +13,41 @@ class AppDrawer extends StatelessWidget {
       child: Column(
         children: [
           AppBar(
-            title: Text('Options'),
+            title: const Text('Options'),
             automaticallyImplyLeading: false,
           ),
-          Divider(),
+          const Divider(),
           ListTile(
-            leading: Icon(Icons.home),
-            title: Text('Main'),
+            leading: const Icon(Icons.home),
+            title: const Text('Main'),
             onTap: () {
               Navigator.of(context)
                   .pushReplacementNamed(WelcomeScreen.routeName);
             },
           ),
-          Divider(),
+          const Divider(),
+          // TODO use determine if a user is an entertainer and conditionally show 'my requests'
           ListTile(
-            leading: Icon(Icons.search),
-            title: Text('Find Nearby Entertainers'),
+            leading: const Icon(Icons.search),
+            title: const Text('Find Nearby Entertainers'),
             onTap: () {
               Navigator.of(context).pop();
               Navigator.of(context).pushNamed(SearchScreen.routeName);
             },
           ),
-          Divider(),
+          const Divider(),
           ListTile(
-            leading: Icon(Icons.exit_to_app),
-            title: Text('Logout'),
+            leading: const Icon(Icons.search),
+            title: const Text('Find Nearby Entertainers'),
+            onTap: () {
+              Navigator.of(context).pop();
+              Navigator.of(context).pushNamed(SearchScreen.routeName);
+            },
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.exit_to_app),
+            title: const Text('Logout'),
             onTap: () {
               Navigator.of(context).pop();
               FirebaseAuth.instance.signOut();
