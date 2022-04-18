@@ -134,7 +134,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           ),
         ],
       ),
-      drawer: const AppDrawer(),
+      drawer: AppDrawer(),
       body: Center(
         child: _isLoading
             ? CircularProgressIndicator(

@@ -29,15 +29,15 @@ class AppDrawer extends StatelessWidget {
           const Divider(),
           // TODO use determine if a user is an entertainer and conditionally show 'my requests'
           ListTile(
-            leading: const Icon(Icons.search),
+            leading: const Icon(Icons.list),
             title: const Text('My Requests'),
             onTap: () {
               Navigator.pushNamed(
                 context,
                 RequestsScreen.routeName,
                 arguments: RequestsScreenArgs(
-                  'entertainerId',
-                  'entertainerUserName',
+                  // TODO figure this out!
+                  'entertainerUID', 'entertainerDisplayName',
                 ),
               );
             },
