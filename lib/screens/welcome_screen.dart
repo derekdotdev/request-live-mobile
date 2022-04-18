@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:request_live/screens/entertainer_screen.dart';
+
+import '../screens/entertainer_screen.dart';
 
 import '../widgets/app_drawer.dart';
 
@@ -46,6 +47,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     setState(() {
       _isLoading = true;
     });
+
     await FirebaseFirestore.instance.collection('users').get().then(
           (querySnapshot) => {
             for (var doc in querySnapshot.docs)

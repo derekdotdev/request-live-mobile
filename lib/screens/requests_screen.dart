@@ -2,10 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
-import '../widgets/requests/requests.dart';
+class RequestsScreenArgs {
+  final String entertainerUid;
+  final String entertainerUserName;
+  RequestsScreenArgs(this.entertainerUid, this.entertainerUserName);
+}
 
 class RequestsScreen extends StatefulWidget {
   const RequestsScreen({Key? key}) : super(key: key);
+
+  static const routeName = '/requests/';
 
   @override
   State<RequestsScreen> createState() => _RequestsScreenState();
@@ -30,6 +36,16 @@ class _RequestsScreenState extends State<RequestsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    final args =
+        ModalRoute.of(context)!.settings.arguments as RequestsScreenArgs;
+    return Scaffold(
+      body: Center(
+        child: Column(
+          children: [
+            Text('Welcome to your requests page!' + args.entertainerUserName),
+          ],
+        ),
+      ),
+    );
   }
 }

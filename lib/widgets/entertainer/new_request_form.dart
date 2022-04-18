@@ -33,10 +33,10 @@ class _NewRequestFormState extends State<NewRequestForm> {
 
   @override
   void dispose() {
-    super.dispose();
     _artistController.dispose();
     _titleController.dispose();
     _notesController.dispose();
+    super.dispose();
   }
 
   Future<void> _trySubmit() async {

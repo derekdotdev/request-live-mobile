@@ -7,6 +7,7 @@ import 'package:request_live/screens/entertainer_screen.dart';
 
 import './screens/auth_screen.dart';
 import './screens/entertainer_screen.dart';
+import './screens/requests_screen.dart';
 import './screens/search_screen.dart';
 import './screens/splash_screen.dart';
 import './screens/welcome_screen.dart';
@@ -61,6 +62,7 @@ class MyApp extends StatelessWidget {
             WelcomeScreen.routeName: (ctx) => WelcomeScreen(),
             SearchScreen.routeName: (ctx) => SearchScreen(),
             EntertainerScreen.routeName: (ctx) => EntertainerScreen(),
+            RequestsScreen.routeName: (ctx) => RequestsScreen(),
           },
         );
       },

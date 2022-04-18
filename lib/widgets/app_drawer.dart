@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../screens/requests_screen.dart';
 import '../screens/search_screen.dart';
 import '../screens/welcome_screen.dart';
 
@@ -29,10 +30,16 @@ class AppDrawer extends StatelessWidget {
           // TODO use determine if a user is an entertainer and conditionally show 'my requests'
           ListTile(
             leading: const Icon(Icons.search),
-            title: const Text('Find Nearby Entertainers'),
+            title: const Text('My Requests'),
             onTap: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pushNamed(SearchScreen.routeName);
+              Navigator.pushNamed(
+                context,
+                RequestsScreen.routeName,
+                arguments: RequestsScreenArgs(
+                  'entertainerId',
+                  'entertainerUserName',
+                ),
+              );
             },
           ),
           const Divider(),
