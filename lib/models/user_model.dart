@@ -1,12 +1,19 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class UserModel {
-  String uid;
+  final String uid;
   String? email;
   String? displayName;
-  bool isEntertainer;
+  String? phoneNumber;
+  String? photoUrl;
+  bool? isEntertainer;
 
-  UserModel(
-      {required this.uid,
-      this.email,
-      this.displayName,
-      required this.isEntertainer});
+  UserModel({
+    required this.uid,
+    this.email,
+    this.displayName,
+    this.phoneNumber,
+    this.photoUrl,
+    this.isEntertainer,
+  });
 }

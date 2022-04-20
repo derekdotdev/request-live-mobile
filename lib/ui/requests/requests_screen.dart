@@ -21,16 +21,37 @@ class _RequestsScreenState extends State<RequestsScreen> {
   @override
   void initState() {
     super.initState();
+    // FirebaseMessaging messaging = FirebaseMessaging.instance;
+    // NotificationSettings settings = await messaging.requestPermission(
+    //   alert: true,
+    //   announcement: false,
+    //   badge: true,
+    //   carPlay: false,
+    //   criticalAlert: false,
+    //   provisional: false,
+    //   sound: true,
+    // );
+    // print('User granted permission: ${settings.authorizationStatus}');
+
+    // Enable FirebaseMessaging
     final fbm = FirebaseMessaging.instance;
+
+    // Ask for push notification permission (iOS)
     fbm.requestPermission();
+
+    // Handle notifications which call back from background (resume)
     FirebaseMessaging.onMessage.listen((message) {
       print(message);
       return;
     });
+
+    // Handle notifications which re-open (launch) the app
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
       print(message);
       return;
     });
+
+    // fbm.subscribeToTopic('requests/entertainer.uid/all');
     fbm.subscribeToTopic('chat');
   }
 

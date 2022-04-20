@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../screens/entertainer_screen.dart';
+import '../entertainer/entertainer_screen.dart';
 
-import '../widgets/app_drawer.dart';
+import '../app_drawer.dart';
 
 class WelcomeScreen extends StatefulWidget {
   static const routeName = '/welcome';
@@ -18,7 +18,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   final _formKey = GlobalKey<FormState>();
   final Map<String, String> _entertainers = {};
 
-  var _isInit = true;
+  late bool _isInit;
   var _isLoading = false;
   var _entertainerId = '';
   var _entertainerSearch = '';
@@ -26,6 +26,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   void initState() {
     super.initState();
+    _isInit = true;
   }
 
   @override
@@ -108,6 +109,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         title: const Text('Request Live'),
         actions: [
           DropdownButton(
+            underline: Container(),
             icon: Icon(
               Icons.more_vert,
               color: Theme.of(context).primaryIconTheme.color,

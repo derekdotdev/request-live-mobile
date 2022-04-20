@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../widgets/app_drawer.dart';
-import '../widgets/entertainer/new_request_form.dart';
+import '../app_drawer.dart';
+import 'new_request_form.dart';
 
 class EntertainerScreenArgs {
   final String entertainerUid;

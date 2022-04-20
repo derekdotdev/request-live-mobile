@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/request_model.dart';
-import '../services/firestore_path.dart';
-import '../services/firestore_service.dart';
+import 'firestore_path.dart';
+import 'firestore_service.dart';
 
 String documentIdFromCurrentDate() => DateTime.now().toIso8601String();
 

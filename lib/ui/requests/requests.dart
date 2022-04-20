@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import './request_tile.dart';
+import '../../ui/requests/request_tile.dart';
 
 class Requests extends StatelessWidget {
   const Requests({Key? key}) : super(key: key);

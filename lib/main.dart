@@ -1,71 +1,41 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:request_live/screens/entertainer_screen.dart';
 
-import './screens/auth_screen.dart';
-import './screens/entertainer_screen.dart';
-import './screens/requests_screen.dart';
-import './screens/search_screen.dart';
-import './screens/splash_screen.dart';
-import './screens/welcome_screen.dart';
+import './flavor.dart';
+import './my_app.dart';
+import './providers/auth_provider.dart';
+import './providers/language_provider.dart';
+import './providers/theme_provider.dart';
+import './resources/firestore_database.dart';
 
 void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    final Future<FirebaseApp> _initialization = Firebase.initializeApp();
-
-    return FutureBuilder(
-      // Initialize FlutterFire
-      future: _initialization,
-      builder: (context, appSnapshot) {
-        return MaterialApp(
-          title: 'Request Live Music',
-          theme: ThemeData(
-            primarySwatch: Colors.purple,
-            backgroundColor: Colors.white,
-            primaryColor: Colors.purple,
-            buttonTheme: ButtonTheme.of(context).copyWith(
-              buttonColor: Colors.purple,
-              textTheme: ButtonTextTheme.primary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-            ),
+  WidgetsFlutterBinding.ensureInitialized();
+  // Recommended way to initialize from flutter fire docs
+  // await Firebase.initializeApp(
+  //   options: DefaultFirebaseOptions.currentPlatform,
+  // );
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+      .then((_) async {
+    runApp(
+      MultiProvider(
+        providers: [
+          Provider<Flavor>.value(value: Flavor.dev),
+          ChangeNotifierProvider<ThemeProvider>(
+            create: (context) => ThemeProvider(),
           ),
-          home: appSnapshot.connectionState != ConnectionState.done
-              ? SplashScreen()
-              : StreamBuilder(
-                  stream: FirebaseAuth.instance.authStateChanges(),
-                  builder: (ctx, userSnapshot) {
-                    if (userSnapshot.connectionState ==
-                        ConnectionState.waiting) {
-                      return SplashScreen();
-                    }
-                    if (userSnapshot.hasData) {
-                      return WelcomeScreen();
-                    }
-                    return AuthScreen();
-                  },
-                ),
-          routes: {
-            AuthScreen.routeName: (ctx) => AuthScreen(),
-            WelcomeScreen.routeName: (ctx) => WelcomeScreen(),
-            SearchScreen.routeName: (ctx) => SearchScreen(),
-            EntertainerScreen.routeName: (ctx) => EntertainerScreen(),
-            RequestsScreen.routeName: (ctx) => RequestsScreen(),
-          },
-        );
-      },
+          ChangeNotifierProvider<AuthProvider>(
+            create: (context) => AuthProvider(),
+          ),
+          // ChangeNotifierProvider<EntertainerProvider>(
+          //   create: (context) => EntertainerProvider(),
+          // )
+        ],
+        child: MyApp(
+          databaseBuilder: (_, uid) => FirestoreDatabase(uid: uid),
+          key: const Key('MyApp'),
+        ),
+      ),
     );
-  }
+  });
 }

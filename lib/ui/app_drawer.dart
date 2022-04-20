@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../screens/requests_screen.dart';
+import 'requests/requests_screen.dart';
 import '../screens/search_screen.dart';
-import '../screens/welcome_screen.dart';
+import 'home/welcome_screen.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({Key? key}) : super(key: key);
