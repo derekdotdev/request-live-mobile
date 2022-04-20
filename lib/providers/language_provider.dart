@@ -5,7 +5,7 @@ class LanguageProvider extends ChangeNotifier {
   // shared pref object
   late SharedPreferenceHelper _sharedPrefsHelper;
 
-  Locale _appLocale = Locale('en');
+  Locale _appLocale = const Locale('en');
 
   LanguageProvider() {
     _sharedPrefsHelper = SharedPreferenceHelper();
@@ -21,9 +21,9 @@ class LanguageProvider extends ChangeNotifier {
 
   void updateLanguage(String languageCode) {
     if (languageCode == "zh") {
-      _appLocale = Locale("zh");
+      _appLocale = const Locale("zh");
     } else {
-      _appLocale = Locale("en");
+      _appLocale = const Locale("en");
     }
 
     _sharedPrefsHelper.changeLanguage(languageCode);

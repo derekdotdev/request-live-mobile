@@ -13,7 +13,7 @@ class Entertainer {
 }
 
 class Entertainers with ChangeNotifier {
-  List<Entertainer> _entertainersList = [];
+  final List<Entertainer> _entertainersList = [];
 
   Future<void> fetchEntertainers() async {
     await FirebaseFirestore.instance.collection('users').get().then(

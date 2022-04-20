@@ -1,4 +1,3 @@
-import 'package:meta/meta.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RequestModel {
@@ -6,8 +5,8 @@ class RequestModel {
   final String artist;
   final String title;
   final String notes;
-  final String requester_id;
-  final String entertainer_id;
+  final String requesterId;
+  final String entertainerId;
   final bool played;
   final Timestamp timestamp;
 
@@ -16,8 +15,8 @@ class RequestModel {
     required this.artist,
     required this.title,
     required this.notes,
-    required this.requester_id,
-    required this.entertainer_id,
+    required this.requesterId,
+    required this.entertainerId,
     required this.played,
     required this.timestamp,
   });
@@ -26,8 +25,8 @@ class RequestModel {
     String artist = data['artist'];
     String title = data['title'];
     String notes = data['notes'];
-    String requester_id = data['requester_id'];
-    String entertainer_id = data['entertainer_id'];
+    String requesterId = data['requester_id'];
+    String entertainerId = data['entertainer_id'];
     bool played = data['played'];
     Timestamp timestamp = data['timestamp'];
 
@@ -36,8 +35,8 @@ class RequestModel {
       artist: artist,
       title: title,
       notes: notes,
-      requester_id: requester_id,
-      entertainer_id: entertainer_id,
+      requesterId: requesterId,
+      entertainerId: entertainerId,
       played: played,
       timestamp: timestamp,
     );
@@ -48,8 +47,8 @@ class RequestModel {
       'artist': artist,
       'title': title,
       'notes': notes,
-      'requester_id': requester_id,
-      'entertainer_id': entertainer_id,
+      'requester_id': requesterId,
+      'entertainer_id': entertainerId,
       'played': played,
       'timestamp': timestamp,
     };

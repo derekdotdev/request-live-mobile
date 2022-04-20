@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 class SearchScreen extends StatelessWidget {
   static const routeName = '/search';
 
+  SearchScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: Center(
         child: SingleChildScrollView(
-          child: Container(
-            child: Text('Search Page'),
-          ),
+          child: Text('Search Page'),
         ),
       ),
     );

@@ -1,8 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class AuthForm extends StatefulWidget {
-  AuthForm(this.submitFn, this.userNamesInUse, this.isLoading);
+  const AuthForm(this.submitFn, this.userNamesInUse, this.isLoading, {Key? key})
+      : super(key: key);
 
   // Submit auth form function passed form auth_screen
   final void Function(

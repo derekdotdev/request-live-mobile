@@ -32,7 +32,7 @@ class Requests extends StatelessWidget {
           reverse: true,
           itemCount: requestDocs.length,
           itemBuilder: (ctx, index) => RequestTile(
-            requestDocs![index].data()!['artist'],
+            requestDocs[index].data()['artist'],
             requestDocs[index].data()['title'],
             requestDocs[index].data()['notes'],
             requestDocs[index].data()['username'],

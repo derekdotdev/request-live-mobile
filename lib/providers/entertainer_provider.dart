@@ -20,7 +20,7 @@ class Entertainers with ChangeNotifier {
 
   List<Entertainer> get getEntertainers => _entertainersList;
 
-  EntertainerProvider() {}
+  // EntertainerProvider() {}
 
   Future<List<Entertainer>> fetchEntertainers() async {
     List<Entertainer> entertainers = [];

@@ -23,7 +23,7 @@ class RequestTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
         ),
         width: double.infinity,
-        padding: EdgeInsets.symmetric(
+        padding: const EdgeInsets.symmetric(
           vertical: 10,
           horizontal: 16,
         ),

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:provider/provider.dart';
+import 'package:request_live/ui/auth/sign_in_screen.dart';
+import 'package:request_live/ui/home/home.dart';
 
-import './app_localizations.dart';
 import './auth_widget_builder.dart';
 import './flavor.dart';
 import './routes.dart';
@@ -12,22 +13,23 @@ import './providers/auth_provider.dart';
 import './providers/language_provider.dart';
 import './providers/theme_provider.dart';
 import './resources/firestore_database.dart';
-import './ui/auth/auth_screen.dart';
-import './ui/home/home.dart';
+import 'app_localizations.dart';
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key, required this.databaseBuilder}) : super(key: key);
+  const MyApp({required Key key, required this.databaseBuilder})
+      : super(key: key);
 
   // Expose builders for 3rd party services at the root of the widget tree
   // This is useful when mocking services while testing
   final FirestoreDatabase Function(BuildContext context, String uid)
       databaseBuilder;
 
-  // This widget is the root of the application
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(
       builder: (_, themeProviderRef, __) {
+        //{context, data, child}
         return Consumer<LanguageProvider>(
           builder: (_, languageProviderRef, __) {
             return AuthWidgetBuilder(
@@ -37,7 +39,7 @@ class MyApp extends StatelessWidget {
                 return MaterialApp(
                   debugShowCheckedModeBanner: false,
                   locale: languageProviderRef.appLocale,
-                  // List of all supported locales
+                  //List of all supported locales
                   supportedLocales: const [
                     Locale('en', 'US'),
                     Locale('zh', 'CN'),
@@ -76,13 +78,15 @@ class MyApp extends StatelessWidget {
                     builder: (_, authProviderRef, __) {
                       if (userSnapshot.connectionState ==
                           ConnectionState.active) {
-                        return userSnapshot.hasData
+                        return authProviderRef.status == Status.authenticated
                             ? HomeScreen()
-                            : const AuthScreen();
+                            : SignInScreen();
                       }
 
-                      return const Material(
-                        child: CircularProgressIndicator(),
+                      return Material(
+                        child: CircularProgressIndicator(
+                          color: Theme.of(context).primaryColor,
+                        ),
                       );
                     },
                   ),

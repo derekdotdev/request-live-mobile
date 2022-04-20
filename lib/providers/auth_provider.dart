@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/user_model.dart';
 
@@ -20,16 +19,16 @@ enum Role {
 class AuthProvider extends ChangeNotifier {
   // Firebase Auth object
   late FirebaseAuth _auth;
-  late FirebaseFirestore _firebaseFirestore;
-  late Future<bool> _checkIsEntertainer;
-  late bool _isEntertainer;
 
   // Default status
   Status _status = Status.uninitialized;
 
   Status get status => _status;
 
-  Stream<UserModel> get user => _auth.authStateChanges().map(_userFromFirebase);
+  Stream<UserModel> get user => _auth
+      .authStateChanges()
+      // .map((User? user) => _userFromFirebase(user));
+      .map(_userFromFirebase);
 
   AuthProvider() {
     //initialise object
@@ -45,39 +44,51 @@ class AuthProvider extends ChangeNotifier {
       return UserModel(displayName: 'Null', uid: 'null');
     }
 
-    _checkIsEntertainer = checkUserIsEntertainer(user.uid);
-    _isEntertainer = _checkIsEntertainer as bool;
+    // _isEntertainer = checkUserIsEntertainer(user.uid);
 
     return UserModel(
         uid: user.uid,
         email: user.email,
         displayName: user.displayName,
         phoneNumber: user.phoneNumber,
-        photoUrl: user.photoURL,
-        isEntertainer: _isEntertainer);
+        photoUrl: user.photoURL);
+
+    //
+    // return UserModel(
+    //     uid: user.uid,
+    //     email: user.email,
+    //     displayName: user.displayName,
+    //     phoneNumber: user.phoneNumber,
+    //     photoUrl: user.photoURL,
+    //     isEntertainer: _isEntertainer);
   }
 
-  Future<bool> checkUserIsEntertainer(String uid) async {
-    var snapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .get()
-        .then((data) => {
-              data.data()!['isEntertainer'],
-            });
-
-    if (snapshot.toString() == 'true') {
-      return true;
-    }
-    return false;
-  }
-
-  Future<void> setUserAsEntertainer(String uid) async {
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .set({'isEntertainer': 'true'});
-  }
+  // Future<bool> checkUserIsEntertainer(String uid) async {
+  //   var snapshot = await FirebaseFirestore.instance
+  //       .collection('users')
+  //       .doc(uid)
+  //       .get()
+  //       .then((data) => {
+  //             if (data.data() != null)
+  //               {
+  //                 data.data()!['isEntertainer'],
+  //               }
+  //           });
+  //
+  //   if (snapshot.toString() == 'true') {
+  //     return true;
+  //   }
+  //   return false;
+  // }
+  //
+  // Future<void> setUserAsEntertainer(User? user) async {
+  //   await FirebaseFirestore.instance.collection('users').doc(user!.uid).set({
+  //     'uid': user.uid,
+  //     'email': user.email,
+  //     'displayName': user.displayName,
+  //     'isEntertainer': 'true'
+  //   });
+  // }
 
   //Method to detect live auth changes such as user sign in and sign out
   Future<void> onAuthStateChanged(User? firebaseUser) async {
@@ -99,9 +110,9 @@ class AuthProvider extends ChangeNotifier {
       final UserCredential result = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
 
-      if (isEntertainer) {
-        await setUserAsEntertainer(result.user!.uid);
-      }
+      // if (isEntertainer) {
+      //   await setUserAsEntertainer(result.user);
+      // }
 
       return _userFromFirebase(result.user);
     } catch (e) {

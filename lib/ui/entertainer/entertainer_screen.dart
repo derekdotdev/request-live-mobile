@@ -1,9 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
 
-import '../app_drawer.dart';
 import 'new_request_form.dart';
+import '../drawer/app_drawer.dart';
+import '../../providers/auth_provider.dart';
 
 class EntertainerScreenArgs {
   final String entertainerUid;
@@ -12,7 +14,9 @@ class EntertainerScreenArgs {
 }
 
 class EntertainerScreen extends StatefulWidget {
-  static final routeName = '/entertainer/';
+  static const routeName = '/entertainer/';
+
+  const EntertainerScreen({Key? key}) : super(key: key);
 
   @override
   State<EntertainerScreen> createState() => _EntertainerScreenState();
@@ -28,6 +32,8 @@ class _EntertainerScreenState extends State<EntertainerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+
     final args =
         ModalRoute.of(context)!.settings.arguments as EntertainerScreenArgs;
 
@@ -35,35 +41,40 @@ class _EntertainerScreenState extends State<EntertainerScreen> {
       String artist,
       String title,
       String notes,
-      String requesterId,
       BuildContext ctx,
     ) async {
+      final authUser = authProvider.user.map((event) => event.uid);
+      final user = FirebaseAuth.instance.currentUser;
       // Hide soft keyboard
       FocusScope.of(context).unfocus();
 
       // Persist request to database
       try {
-        await FirebaseFirestore.instance
-            .collection('entertainers')
-            .doc(args.entertainerUid)
-            .collection('requests')
-            .add(
-          {
-            'artist': artist,
-            'title': title,
-            'notes': notes,
-            'requested_by': requesterId,
-            'entertainer_id': args.entertainerUid,
-            'timestamp': Timestamp.now(),
-          },
-        );
+        if (user == null) {
+          print('authProvider.user == null!');
+        } else {
+          await FirebaseFirestore.instance
+              .collection('entertainers')
+              .doc(args.entertainerUid)
+              .collection('requests')
+              .add(
+            {
+              'artist': artist,
+              'title': title,
+              'notes': notes,
+              'requested_by': user.uid,
+              'entertainer_id': args.entertainerUid,
+              'timestamp': Timestamp.now(),
+            },
+          );
 
-        ScaffoldMessenger.of(ctx).showSnackBar(
-          const SnackBar(
-            content: Text('Your request has been sent!'),
-            backgroundColor: Colors.green,
-          ),
-        );
+          ScaffoldMessenger.of(ctx).showSnackBar(
+            const SnackBar(
+              content: Text('Your request has been sent!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
       } catch (err) {
         ScaffoldMessenger.of(ctx).showSnackBar(
           SnackBar(
@@ -80,7 +91,7 @@ class _EntertainerScreenState extends State<EntertainerScreen> {
       appBar: AppBar(
         title: Text('${args.entertainerUserName}\'s Page'),
       ),
-      drawer: const AppDrawer(),
+      // drawer: AppDrawer(),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,

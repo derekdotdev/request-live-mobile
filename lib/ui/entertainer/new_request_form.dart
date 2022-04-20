@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NewRequestForm extends StatefulWidget {
   const NewRequestForm(this.isLoading, this.submitFn, {Key? key})
@@ -11,7 +9,6 @@ class NewRequestForm extends StatefulWidget {
     String artist,
     String title,
     String notes,
-    String requesterId,
     BuildContext ctx,
   ) submitFn;
 
@@ -20,7 +17,6 @@ class NewRequestForm extends StatefulWidget {
 }
 
 class _NewRequestFormState extends State<NewRequestForm> {
-  final requester = FirebaseAuth.instance.currentUser;
   final _formKey = GlobalKey<FormState>();
   final _artistController = TextEditingController();
   final _titleController = TextEditingController();
@@ -55,7 +51,6 @@ class _NewRequestFormState extends State<NewRequestForm> {
         _artist.trim(),
         _title.trim(),
         _notes.trim(),
-        requester!.uid,
         context,
       );
 
