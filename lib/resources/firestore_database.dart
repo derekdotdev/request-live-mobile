@@ -1,8 +1,11 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:request_live/models/username_model.dart';
 
-import '../models/request_model.dart';
+import '../models/request.dart';
+import '../models/user_model.dart';
+import '../models/username_model.dart';
 import 'firestore_path.dart';
 import 'firestore_service.dart';
 
@@ -22,29 +25,62 @@ changed to true.
  */
 
 class FirestoreDatabase {
-  FirestoreDatabase({required this.uid}) : assert(uid != null);
+  FirestoreDatabase({required this.uid});
   final String uid;
 
   final _firestoreService = FirestoreService.instance;
 
+  Future<Map<String, dynamic>> getUserDetails() async {
+    var userDetails = await _firestoreService.getUserDetails(uid: uid);
+    return userDetails;
+  }
+
+  Future<List<String>> fetchUsernamesInUse() async {
+    var usernames = await _firestoreService.fetchUsernamesInUse();
+    return usernames;
+  }
+
+  // TODO address this!
+  // Not used yet. Possibly better option than downloading a list of existing usernames to device
+  // (along with preventing race condition by setting security rules
+  // to prevent username node from being used more than once)
+  void checkUsernamesInUse(String checkUsername) async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection(FirestorePath.username(checkUsername))
+        // .orderBy('username')
+        .where('username', isEqualTo: checkUsername)
+        .get();
+  }
+
+  Future<void> setUsername(UsernameModel username) async {
+    await _firestoreService.set(
+      path: FirestorePath.username(username.username),
+      data: username.toMap(),
+    );
+  }
+
+  // Method to create user
+  Future<void> setUser(UserModel user) async => await _firestoreService.set(
+        path: FirestorePath.user(user.uid),
+        data: user.toMap(),
+      );
+
   // Method to create/update requestModel
-  Future<void> setRequest(RequestModel request) async =>
-      await _firestoreService.set(
-        path: FirestorePath.request(uid, request.id),
+  Future<void> setRequest(Request request) async => await _firestoreService.set(
+        path: FirestorePath.request(uid, request.uid),
         data: request.toMap(),
       );
 
   // Method to delete request entry
-  Future<void> deleteRequest(RequestModel request) async {
+  Future<void> deleteRequest(Request request) async {
     await _firestoreService.deleteData(
-        path: FirestorePath.request(uid, request.id));
+        path: FirestorePath.request(uid, request.uid));
   }
 
   // Method to retrieve all requests made to the same entertainer based on uid
-  Stream<List<RequestModel>> requestsStream() =>
-      _firestoreService.collectionStream(
+  Stream<List<Request>> requestsStream() => _firestoreService.collectionStream(
         path: FirestorePath.requests(uid),
-        builder: (data, documentId) => RequestModel.fromMap(data, documentId),
+        builder: (data, documentId) => Request.fromMap(data, documentId),
       );
 
   // Method to mark all requests as played
@@ -56,7 +92,7 @@ class FirestoreDatabase {
         .get();
 
     for (DocumentSnapshot ds in querySnapshot.docs) {
-      batchUpdate.update(ds.reference, {'complete': true});
+      batchUpdate.update(ds.reference, {'played': true});
     }
 
     await batchUpdate.commit();

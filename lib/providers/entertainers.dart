@@ -15,12 +15,34 @@ class Entertainer {
 class Entertainers with ChangeNotifier {
   final List<Entertainer> _entertainersList = [];
 
+  Future<List<String>> _fetchUserNamesInUse() async {
+    print('_fetchUserNamesInUse() called!');
+    List<String> usernames = [];
+    var currentUsername = '';
+    await FirebaseFirestore.instance
+        .collection('usernames')
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((element) {
+        currentUsername = element['username'].toString();
+        print(currentUsername);
+        usernames.add(currentUsername);
+      });
+    });
+
+    print('Fetched Usernames: ');
+    for (String s in usernames) {
+      print(s);
+    }
+    return usernames;
+  }
+
   Future<void> fetchEntertainers() async {
     await FirebaseFirestore.instance.collection('users').get().then(
           (querySnapshot) => {
             for (var doc in querySnapshot.docs)
               {
-                if (doc.data()['isDj'] == true)
+                if (doc.data()['is_entertainer'] == true)
                   {
                     _entertainersList.add(
                       Entertainer(

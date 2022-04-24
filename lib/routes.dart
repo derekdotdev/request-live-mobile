@@ -13,14 +13,14 @@ class Routes {
   static const String login = '/login';
   static const String register = '/register';
   static const String entertainer = '/entertainer';
-  static const String home = '/home';
+  static const String welcome = '/welcome';
   static const String requests = '/requests';
 
   static final routes = <String, WidgetBuilder>{
     splash: (BuildContext context) => const SplashScreen(),
     login: (BuildContext context) => SignInScreen(),
     register: (BuildContext context) => RegisterScreen(),
-    home: (BuildContext context) => const WelcomeScreen(),
+    welcome: (BuildContext context) => const WelcomeScreen(),
     requests: (BuildContext context) => const RequestsScreen(),
     entertainer: (BuildContext context) => const EntertainerScreen(),
   };

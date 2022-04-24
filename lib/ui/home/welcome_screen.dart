@@ -1,13 +1,17 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 
 import '../../app_localizations.dart';
+import '../../constants/global_variables.dart';
+import '../../resources/firestore_database.dart';
 import '../drawer/app_drawer.dart';
 import '../entertainer/entertainer_screen.dart';
 import '../../routes.dart';
 import '../../providers/auth_provider.dart';
+import '../../constants/colors.dart';
 
 class WelcomeScreen extends StatefulWidget {
   // static const routeName = '/welcome';
@@ -18,58 +22,30 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
+  int _page = 0;
+  late PageController pageController;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
   final Map<String, String> _entertainers = {};
 
   late bool _isInit;
-  var _isLoading = false;
+  final _isLoading = false;
   var _entertainerId = '';
   var _entertainerSearch = '';
 
   @override
   void initState() {
     super.initState();
+    pageController = PageController();
     _isInit = true;
   }
 
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-  //
-  //   // Only load entertainer usernames at first login
-  //   // TODO this may cause problems later..consider provider.of<Entertainer>(ctx)
-  //   if (_isInit) {
-  //     fetchEntertainerUserNames();
-  //   }
-  //
-  //   _isInit = false;
-  // }
-
-  // Get list of entertainers from database
-  // TODO There has to be a better way...Right?
-  // Future<void> fetchEntertainerUserNames() async {
-  //   setState(() {
-  //     _isLoading = true;
-  //   });
-  //
-  //   // await FirebaseFirestore.instance.collection('users').get().then(
-  //   //       (querySnapshot) => {
-  //   //         for (var doc in querySnapshot.docs)
-  //   //           {
-  //   //             if (doc.data()['isDj'] == true)
-  //   //               {
-  //   //                 _entertainers.putIfAbsent(
-  //   //                     doc.id, () => doc.data()['username']),
-  //   //                 print(doc.data()['username'].toString()),
-  //   //               },
-  //   //           },
-  //   //       },
-  //   //     );
-  //   setState(() {
-  //     _isLoading = false;
-  //   });
-  // }
+  @override
+  void dispose() {
+    // TODO verify if page controller should be disposed before or after super().
+    pageController.dispose();
+    super.dispose();
+  }
 
   // Submit search function
   void _trySubmitEntertainerSearch() {
@@ -105,22 +81,39 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     }
   }
 
+  void onPageChanged(int page) {
+    setState(() {
+      _page = page;
+    });
+  }
+
+  void navigationTapped(int page) {
+    pageController.jumpToPage(page);
+    setState(() {
+      _page = page;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
     final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
       key: _scaffoldKey,
+      // backgroundColor: width > webScreenSize ? webBackgroundColor : mobileBackgroundColor,
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: StreamBuilder(
-          stream: authProvider.user,
-          builder: (context, snapshot) {
-            // final UserModel? user = snapshot.data as UserModel?;
-            return const Text('homeAppBarTitle');
-          },
-        ),
-      ),
+      appBar: width > webScreenSize
+          ? null
+          : AppBar(
+              title: StreamBuilder(
+                stream: authProvider.user,
+                builder: (context, snapshot) {
+                  // final UserModel? user = snapshot.data as UserModel?;
+                  return const Text('homeAppBarTitle');
+                },
+              ),
+            ),
       drawer: AppDrawer(),
       body: Center(
         child: _isLoading
@@ -177,6 +170,31 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   ),
                 ],
               ),
+      ),
+      bottomNavigationBar: CupertinoTabBar(
+        backgroundColor: mobileBackgroundColor,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home,
+                color: (_page == 0) ? primaryColor : secondaryColor),
+            label: '',
+            backgroundColor: primaryColor,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search,
+                color: (_page == 1) ? primaryColor : secondaryColor),
+            label: '',
+            backgroundColor: primaryColor,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person,
+                color: (_page == 2) ? primaryColor : secondaryColor),
+            label: '',
+            backgroundColor: primaryColor,
+          ),
+        ],
+        onTap: navigationTapped,
+        currentIndex: _page,
       ),
     );
   }

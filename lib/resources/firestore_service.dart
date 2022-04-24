@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 /*
-This class represent all possible CRUD operation for FirebaseFirestore.
+This class represent all possible CRUD operations for FirebaseFirestore.
 It contains all generic implementation needed based on the provided document
 path and documentID,since most of the time in FirebaseFirestore design, we will have
 documentID and path for any document and collections.
@@ -9,6 +9,45 @@ documentID and path for any document and collections.
 class FirestoreService {
   FirestoreService._();
   static final instance = FirestoreService._();
+
+  Future<Map<String, dynamic>> getUserDetails({
+    required String uid,
+  }) async {
+    final querySnapshot =
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    if (querySnapshot.exists) {
+      return querySnapshot.data()!;
+    }
+    return {};
+  }
+
+  Future<List<String>> fetchUsernamesInUse() async {
+    List<String> usernames = [];
+    final querySnapshot =
+        await FirebaseFirestore.instance.collection('usernames').get().then(
+              (snapshot) => {
+                snapshot.docs.map((doc) {
+                  usernames.add(doc['username'] as String);
+                }),
+              },
+            );
+    return usernames;
+  }
+
+  Future<void> setUser({
+    required String userPath,
+    required Map<String, dynamic> userData,
+    required String usernamePath,
+    required Map<String, dynamic> usernameData,
+    bool merge = false,
+  }) async {
+    var reference = FirebaseFirestore.instance.doc(userPath);
+    print('$userPath: $userData');
+    await reference.set(userData);
+    reference = FirebaseFirestore.instance.doc(usernamePath);
+    print('$usernamePath: $usernameData');
+    await reference.set(usernameData);
+  }
 
   Future<void> set({
     required String path,
@@ -20,6 +59,7 @@ class FirestoreService {
     await reference.set(data);
   }
 
+  //
   Future<void> bulkSet({
     required String path,
     required List<Map<String, dynamic>> datas,
@@ -28,8 +68,8 @@ class FirestoreService {
     final reference = FirebaseFirestore.instance.doc(path);
     final batchSet = FirebaseFirestore.instance.batch();
 
-//    for()
-//    batchSet.
+    //    for()
+    //    batchSet.
 
     print('$path: $datas');
   }
@@ -42,9 +82,9 @@ class FirestoreService {
 
   Stream<List<T>> collectionStream<T>({
     required String path,
-    required T builder(Map<String, dynamic> data, String documentID),
-    Query queryBuilder(Query query)?,
-    int sort(T lhs, T rhs)?,
+    required T Function(Map<String, dynamic> data, String documentID) builder,
+    Query Function(Query query)? queryBuilder,
+    int Function(T lhs, T rhs)? sort,
   }) {
     Query query = FirebaseFirestore.instance.collection(path);
     if (queryBuilder != null) {
@@ -66,7 +106,7 @@ class FirestoreService {
 
   Stream<T> documentStream<T>({
     required String path,
-    required T builder(Map<String, dynamic> data, String documentID),
+    required T Function(Map<String, dynamic> data, String documentID) builder,
   }) {
     final DocumentReference reference = FirebaseFirestore.instance.doc(path);
     final Stream<DocumentSnapshot> snapshots = reference.snapshots();

@@ -1,31 +1,58 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class UserModel {
-  final String uid;
+  String uid;
   String? email;
+  String username;
   String? displayName;
   String? phoneNumber;
   String? photoUrl;
+  String isEntertainer;
+  bool isLive;
 
   UserModel({
     required this.uid,
     this.email,
+    required this.username,
     this.displayName,
     this.phoneNumber,
     this.photoUrl,
+    required this.isEntertainer,
+    required this.isLive,
   });
 
-  // final String uid;
-  // String? email;
-  // String? displayName;
-  // String? phoneNumber;
-  // String? photoUrl;
-  // Future<bool>? isEntertainer;
-  //
-  // UserModel({
-  //   required this.uid,
-  //   this.email,
-  //   this.displayName,
-  //   this.phoneNumber,
-  //   this.photoUrl,
-  //   this.isEntertainer,
-  // });
+  Map<String, dynamic> toMap() {
+    return {
+      'uid': uid,
+      'email': email,
+      'username': username,
+      'display_name': displayName,
+      'phone_number': phoneNumber,
+      'photo_url': photoUrl,
+      'is_entertainer': isEntertainer,
+      'is_live': isLive,
+    };
+  }
+
+  factory UserModel.fromMap(Map<String, dynamic> data, String uid) {
+    String uid = data['uid'];
+    String email = data['email'];
+    String username = data['username'];
+    String displayName = data['display_name'];
+    String phoneNumber = data['phone_number'];
+    String photoUrl = data['photo_url'];
+    String isEntertainer = data['is_entertainer'];
+    bool isLive = data['is_live'];
+
+    return UserModel(
+      uid: uid,
+      email: email,
+      username: username,
+      displayName: displayName,
+      phoneNumber: phoneNumber,
+      photoUrl: photoUrl,
+      isEntertainer: isEntertainer,
+      isLive: isLive,
+    );
+  }
 }

@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../app_localizations.dart';
 import '../requests/requests_screen.dart';
-import '../../screens/search_screen.dart';
+import '../search/search_screen.dart';
 import '../../routes.dart';
 import '../../providers/auth_provider.dart';
 
@@ -27,7 +27,7 @@ class AppDrawer extends StatelessWidget {
             title: const Text('Main'),
             onTap: () {
               Navigator.of(context).pop();
-              Navigator.of(context).pushReplacementNamed(Routes.home);
+              Navigator.of(context).pushReplacementNamed(Routes.welcome);
             },
           ),
           const Divider(),

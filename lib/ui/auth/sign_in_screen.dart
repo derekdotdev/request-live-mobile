@@ -143,7 +143,7 @@ class _SignInScreenState extends State<SignInScreen> {
                               ));
                             } else {
                               Navigator.of(context)
-                                  .pushReplacementNamed(Routes.home);
+                                  .pushReplacementNamed(Routes.welcome);
                             }
                           }
                         }),
