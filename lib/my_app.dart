@@ -13,9 +13,6 @@ import './providers/auth_provider.dart';
 import './providers/language_provider.dart';
 import './providers/theme_provider.dart';
 import './resources/firestore_database.dart';
-import './ui/responsive/responsive_layout.dart';
-import './ui/responsive/mobile_screen_layout.dart';
-import './ui/responsive/web_screen_layout.dart';
 import 'app_localizations.dart';
 
 class MyApp extends StatelessWidget {
@@ -82,7 +79,6 @@ class MyApp extends StatelessWidget {
                       if (userSnapshot.connectionState ==
                           ConnectionState.active) {
                         return authProviderRef.status == Status.authenticated
-                            // ? ResponsiveLayout(mobileScreenLayout: MobileScreenLayout(), webScreenLayout: WebScreenLayout())
                             ? HomeScreen()
                             : SignInScreen();
                       }

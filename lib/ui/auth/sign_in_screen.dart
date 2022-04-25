@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:request_live/constants/utils.dart';
 
 import '../../app_localizations.dart';
 import '../../flavor.dart';
@@ -16,6 +17,7 @@ class _SignInScreenState extends State<SignInScreen> {
   late TextEditingController _passwordController;
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
+  bool _isLoading = false;
 
   @override
   void initState() {

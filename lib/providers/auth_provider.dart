@@ -24,7 +24,7 @@ class AuthProvider extends ChangeNotifier {
   late FirebaseAuth _auth;
   late FirestoreDatabase _firestoreDatabase;
   late String _username = '';
-  late String _isEntertainer = '';
+  late bool _isEntertainer = false;
   late bool _isLive = false;
 
   AuthProvider() {
@@ -62,7 +62,7 @@ class AuthProvider extends ChangeNotifier {
         email: 'null',
         username: 'null',
         displayName: 'null',
-        isEntertainer: 'false',
+        isEntertainer: false,
         isLive: false,
       );
     }
@@ -117,7 +117,7 @@ class AuthProvider extends ChangeNotifier {
     String email,
     String password,
     String username,
-    String isEntertainer,
+    bool isEntertainer,
   ) async {
     try {
       _status = Status.registering;

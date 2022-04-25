@@ -18,13 +18,13 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
   final _formKey = GlobalKey<FormState>();
+  final _isEntertainerValue = false;
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
   late TextEditingController _usernameController;
   late List<String> _usernamesInUse = [];
   late var _isLoading = false;
   late bool _isInit;
-  late final String _isEntertainerValue = '';
 
   @override
   void initState() {
@@ -52,6 +52,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _usernameController.dispose();
+    _usernamesInUse.clear();
     super.dispose();
   }
 
@@ -95,7 +96,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             )
           : Stack(
               children: <Widget>[
-                _buildBackground(),
+                // _buildBackground(),
                 Align(
                   alignment: Alignment.center,
                   child: _buildForm(context),

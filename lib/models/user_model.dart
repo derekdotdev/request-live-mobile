@@ -7,7 +7,7 @@ class UserModel {
   String? displayName;
   String? phoneNumber;
   String? photoUrl;
-  String isEntertainer;
+  bool isEntertainer;
   bool isLive;
 
   UserModel({
@@ -41,7 +41,7 @@ class UserModel {
     String displayName = data['display_name'];
     String phoneNumber = data['phone_number'];
     String photoUrl = data['photo_url'];
-    String isEntertainer = data['is_entertainer'];
+    bool isEntertainer = data['is_entertainer'];
     bool isLive = data['is_live'];
 
     return UserModel(
