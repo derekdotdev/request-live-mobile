@@ -21,6 +21,12 @@ class FirestoreService {
     return {};
   }
 
+  Future<DocumentSnapshot<Map<String, dynamic>>> getUserSnap(
+      {required String path}) async {
+    var userSnap = await FirebaseFirestore.instance.doc(path).get();
+    return userSnap;
+  }
+
   Future<List<String>> fetchUsernamesInUse() async {
     List<String> usernames = [];
     final querySnapshot =
@@ -60,6 +66,7 @@ class FirestoreService {
   }
 
   //
+
   Future<void> bulkSet({
     required String path,
     required List<Map<String, dynamic>> datas,
@@ -78,6 +85,40 @@ class FirestoreService {
     final reference = FirebaseFirestore.instance.doc(path);
     print('delete: $path');
     await reference.delete();
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> entertainerSnapshotStream(
+      {required String path}) {
+    return FirebaseFirestore.instance
+        .collection(path)
+        // .where('is_entertainer', isEqualTo: true)
+        .snapshots();
+  }
+
+  Stream<List<T>> entertainerCollectionStream<T>({
+    required String path,
+    required T Function(Map<String, dynamic> data) builder,
+    Query Function(Query query)? queryBuilder,
+    int Function(T lhs, T rhs)? sort,
+  }) {
+    Query query = FirebaseFirestore.instance.collection(path);
+    if (queryBuilder != null) {
+      query = queryBuilder(query);
+    }
+    final Stream<QuerySnapshot> snapshots = query.snapshots();
+    return snapshots.map((snapshot) {
+      final result = snapshot.docs
+          .map((snapshot) => builder(
+                snapshot.data() as Map<String, dynamic>,
+              ))
+          .where((value) =>
+              value != null) // TODO Figure out how to sort out requesters
+          .toList();
+      if (sort != null) {
+        result.sort(sort);
+      }
+      return result;
+    });
   }
 
   Stream<List<T>> collectionStream<T>({
@@ -110,6 +151,22 @@ class FirestoreService {
   }) {
     final DocumentReference reference = FirebaseFirestore.instance.doc(path);
     final Stream<DocumentSnapshot> snapshots = reference.snapshots();
+    return snapshots.map((snapshot) =>
+        builder(snapshot.data() as Map<String, dynamic>, snapshot.id));
+  }
+
+  Stream<T> entertainerStream<T>({
+    required String path,
+    required T Function(Map<String, dynamic> data, String documentID) builder,
+  }) {
+    final DocumentReference reference = FirebaseFirestore.instance.doc(path);
+    final Stream<DocumentSnapshot> snapshots =
+        reference.snapshots().where((event) {
+      if (event.get('is_entertainer') == true) {
+        return true;
+      }
+      return false;
+    });
     return snapshots.map((snapshot) =>
         builder(snapshot.data() as Map<String, dynamic>, snapshot.id));
   }

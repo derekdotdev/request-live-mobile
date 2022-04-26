@@ -35,6 +35,14 @@ class FirestoreDatabase {
     return userDetails;
   }
 
+  // Method to retrieve user data for profile screen (in use)
+  Future<DocumentSnapshot<Map<String, dynamic>>> userData(
+      String userUid) async {
+    final userSnap =
+        await _firestoreService.getUserSnap(path: FirestorePath.user(userUid));
+    return userSnap;
+  }
+
   Future<List<String>> fetchUsernamesInUse() async {
     var usernames = await _firestoreService.fetchUsernamesInUse();
     return usernames;
@@ -76,6 +84,18 @@ class FirestoreDatabase {
     await _firestoreService.deleteData(
         path: FirestorePath.request(uid, request.uid));
   }
+
+  // Method to retrieve all entertainers for feed screen (in use)
+  Stream<QuerySnapshot<Map<String, dynamic>>> entertainerSnapshotStream() =>
+      _firestoreService.entertainerSnapshotStream(
+        path: FirestorePath.users(),
+      );
+
+  Stream<List<UserModel>> entertainerCollectionStream() =>
+      _firestoreService.entertainerCollectionStream(
+        path: FirestorePath.users(),
+        builder: (data) => UserModel.fromMap(data, uid),
+      );
 
   // Method to retrieve all requests made to the same entertainer based on uid
   Stream<List<Request>> requestsStream() => _firestoreService.collectionStream(

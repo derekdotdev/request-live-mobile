@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:request_live/constants/utils.dart';
 
 import '../../app_localizations.dart';
 import '../../flavor.dart';
@@ -8,6 +7,8 @@ import '../../providers/auth_provider.dart';
 import '../../routes.dart';
 
 class SignInScreen extends StatefulWidget {
+  const SignInScreen({Key? key}) : super(key: key);
+
   @override
   _SignInScreenState createState() => _SignInScreenState();
 }
@@ -17,7 +18,6 @@ class _SignInScreenState extends State<SignInScreen> {
   late TextEditingController _passwordController;
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
-  bool _isLoading = false;
 
   @override
   void initState() {
@@ -32,7 +32,7 @@ class _SignInScreenState extends State<SignInScreen> {
       key: _scaffoldKey,
       body: Stack(
         children: <Widget>[
-          _buildBackground(),
+          // _buildBackground(),
           Align(
             alignment: Alignment.center,
             child: _buildForm(context),

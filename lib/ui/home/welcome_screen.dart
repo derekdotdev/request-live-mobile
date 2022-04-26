@@ -6,7 +6,9 @@ import 'package:provider/provider.dart';
 
 import '../../app_localizations.dart';
 import '../../constants/global_variables.dart';
+import '../../models/user_model.dart';
 import '../../resources/firestore_database.dart';
+import '../drawer/app_bar_local.dart';
 import '../drawer/app_drawer.dart';
 import '../entertainer/entertainer_screen.dart';
 import '../../routes.dart';
@@ -25,19 +27,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   int _page = 0;
   late PageController pageController;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  final _formKey = GlobalKey<FormState>();
-  final Map<String, String> _entertainers = {};
-
-  late bool _isInit;
-  final _isLoading = false;
-  var _entertainerId = '';
-  var _entertainerSearch = '';
 
   @override
   void initState() {
     super.initState();
     pageController = PageController();
-    _isInit = true;
   }
 
   @override
@@ -45,40 +39,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     // TODO verify if page controller should be disposed before or after super().
     pageController.dispose();
     super.dispose();
-  }
-
-  // Submit search function
-  void _trySubmitEntertainerSearch() {
-    final isValid = _formKey.currentState!.validate();
-
-    if (isValid) {
-      _formKey.currentState!.save();
-      var entertainerFound =
-          _entertainers.containsValue(_entertainerSearch.trim().toLowerCase());
-
-      if (entertainerFound) {
-        // Get entertainer uid for entertainer name
-        _entertainerId = _entertainers.keys
-            .firstWhere((k) => _entertainers[k] == _entertainerSearch);
-
-        Navigator.pushNamed(
-          context,
-          Routes.entertainer,
-          arguments: EntertainerScreenArgs(
-            _entertainerId,
-            _entertainerSearch.trim(),
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text(
-                'Unable to find an entertainer with that name. Please try again...'),
-            backgroundColor: Theme.of(context).errorColor,
-          ),
-        );
-      }
-    }
   }
 
   void onPageChanged(int page) {
@@ -97,7 +57,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
       key: _scaffoldKey,
@@ -106,86 +65,40 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       appBar: width > webScreenSize
           ? null
           : AppBar(
-              title: StreamBuilder(
-                stream: authProvider.user,
-                builder: (context, snapshot) {
-                  // final UserModel? user = snapshot.data as UserModel?;
-                  return const Text('homeAppBarTitle');
-                },
-              ),
+              title: const Text('Request Live'),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.exit_to_app),
+                  onPressed: () {
+                    _confirmSignOut(context);
+                  },
+                ),
+              ],
             ),
-      drawer: AppDrawer(),
-      body: Center(
-        child: _isLoading
-            ? CircularProgressIndicator(
-                color: Theme.of(context).primaryColor,
-              )
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Welcome to Request Live!',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
-                  Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: TextFormField(
-                            key: const ValueKey('search'),
-                            autocorrect: false,
-                            validator: (value) {
-                              if (value == null) {
-                                return 'Entry cannot be blank!';
-                              }
-                              return null;
-                            },
-                            decoration: const InputDecoration(
-                              label: Center(
-                                child: Text(
-                                    'Search for an entertainer to start making requests!'),
-                              ),
-                            ),
-                            textAlign: TextAlign.center,
-                            onSaved: (value) {
-                              if (value != null) {
-                                _entertainerSearch = value;
-                              }
-                            },
-                          ),
-                        ),
-                        TextButton(
-                          child: const Text('Search'),
-                          onPressed: _trySubmitEntertainerSearch,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+      drawer: width < webScreenSize ? null : const AppDrawer(),
+      body: PageView(
+        children: homeScreenItems,
+        controller: pageController,
+        onPageChanged: onPageChanged,
       ),
       bottomNavigationBar: CupertinoTabBar(
         backgroundColor: mobileBackgroundColor,
         items: [
+          // Feed Screen
           BottomNavigationBarItem(
             icon: Icon(Icons.home,
                 color: (_page == 0) ? primaryColor : secondaryColor),
             label: '',
             backgroundColor: primaryColor,
           ),
+          // Search Screen
           BottomNavigationBarItem(
             icon: Icon(Icons.search,
                 color: (_page == 1) ? primaryColor : secondaryColor),
             label: '',
             backgroundColor: primaryColor,
           ),
+          // Profile Screen
           BottomNavigationBarItem(
             icon: Icon(Icons.person,
                 color: (_page == 2) ? primaryColor : secondaryColor),
@@ -195,6 +108,40 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         ],
         onTap: navigationTapped,
         currentIndex: _page,
+      ),
+    );
+  }
+
+  _confirmSignOut(BuildContext context) {
+    showPlatformDialog(
+      context: context,
+      builder: (_) => PlatformAlertDialog(
+        material: (_, PlatformTarget target) => MaterialAlertDialogData(
+            backgroundColor: Theme.of(context).appBarTheme.color),
+        title: Text(AppLocalizations.of(context).translate("alertDialogTitle")),
+        content:
+            Text(AppLocalizations.of(context).translate("alertDialogMessage")),
+        actions: <Widget>[
+          PlatformDialogAction(
+            child: PlatformText(
+                AppLocalizations.of(context).translate("alertDialogCancelBtn")),
+            onPressed: () => Navigator.pop(context),
+          ),
+          PlatformDialogAction(
+            child: PlatformText(
+                AppLocalizations.of(context).translate("alertDialogYesBtn")),
+            onPressed: () {
+              final authProvider =
+                  Provider.of<AuthProvider>(context, listen: false);
+
+              authProvider.signOut();
+
+              Navigator.pop(context);
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                  Routes.login, ModalRoute.withName(Routes.login));
+            },
+          )
+        ],
       ),
     );
   }
