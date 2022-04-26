@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 
+import 'entertainer_bio.dart';
 import 'new_request_form.dart';
 import '../drawer/app_drawer.dart';
 import '../../providers/auth_provider.dart';
@@ -96,14 +97,7 @@ class _EntertainerScreenState extends State<EntertainerScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            'BIO GOES HERE',
-            style: TextStyle(
-              fontSize: 36,
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
+          EntertainerBio(),
           NewRequestForm(_isLoading, _sendRequest),
         ],
       ),

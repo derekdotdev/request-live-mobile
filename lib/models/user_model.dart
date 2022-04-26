@@ -34,6 +34,21 @@ class UserModel {
     };
   }
 
+  static UserModel fromSnap(DocumentSnapshot snap) {
+    var snapshot = snap.data() as Map<String, dynamic>;
+
+    return UserModel(
+      uid: snapshot['uid'],
+      email: snapshot['email'],
+      username: snapshot['username'],
+      displayName: snapshot['display_name'],
+      phoneNumber: snapshot['phone_number'],
+      photoUrl: snapshot['photo_url'],
+      isEntertainer: snapshot['is_entertainer'],
+      isLive: snapshot['is_live'],
+    );
+  }
+
   factory UserModel.fromMap(Map<String, dynamic> data, String uid) {
     String uid = data['uid'];
     String email = data['email'];

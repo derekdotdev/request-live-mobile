@@ -5,6 +5,13 @@ class EntertainerBio extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Text(
+      'BIO GOES HERE',
+      style: TextStyle(
+        fontSize: 36,
+        fontWeight: FontWeight.bold,
+        color: Theme.of(context).primaryColor,
+      ),
+    );
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,6 +8,7 @@ import '../models/user_model.dart';
 import '../models/username_model.dart';
 import '../models/request.dart';
 import '../resources/firestore_database.dart';
+import '../resources/storage_methods.dart';
 
 enum Status {
   uninitialized,
@@ -172,6 +175,39 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
       return false;
     }
+  }
+
+  Future<String> updateUserProfileImage({
+    required String userUid,
+    required Uint8List file,
+  }) async {
+    String res = 'Some error occurred';
+    try {
+      String photoUrl = await StorageMethods()
+          .uploadImageToStorage('profilePics', file, false);
+
+      UserModel _user =
+          UserModel.fromSnap(await _firestoreDatabase.getUserData());
+
+      UserModel _newUser = UserModel(
+        uid: _user.uid,
+        email: _user.email,
+        username: _user.username,
+        displayName: _user.displayName,
+        phoneNumber: _user.phoneNumber,
+        photoUrl: photoUrl,
+        isEntertainer: _user.isEntertainer,
+        isLive: _user.isLive,
+      );
+
+      await _firestoreDatabase.setUser(_newUser);
+
+      res = 'success';
+    } catch (e) {
+      return e.toString();
+    }
+
+    return res;
   }
 
   //Method to handle password reset email

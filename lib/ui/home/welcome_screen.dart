@@ -25,18 +25,45 @@ class WelcomeScreen extends StatefulWidget {
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
   int _page = 0;
+  var userDetails = {};
+  late UserModel _user;
   late PageController pageController;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  late FirestoreDatabase firestoreDatabase;
+  bool _isInit = false;
+  bool _isLoading = false;
+  bool _isEntertainer = false;
 
   @override
   void initState() {
     super.initState();
     pageController = PageController();
+    _isInit = true;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_isInit) {
+      firestoreDatabase =
+          Provider.of<FirestoreDatabase>(context, listen: false);
+      getUserData(firestoreDatabase);
+    }
+  }
+
+  void getUserData(FirestoreDatabase db) async {
+    setState(() {
+      _isLoading = true;
+    });
+    _user = UserModel.fromSnap(await db.getUserData());
+    setState(() {
+      _isEntertainer = _user.isEntertainer;
+      _isLoading = false;
+    });
   }
 
   @override
   void dispose() {
-    // TODO verify if page controller should be disposed before or after super().
     pageController.dispose();
     super.dispose();
   }
@@ -57,59 +84,83 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
+    final firestoreDatabase = Provider.of<FirestoreDatabase>(context);
 
-    return Scaffold(
-      key: _scaffoldKey,
-      // backgroundColor: width > webScreenSize ? webBackgroundColor : mobileBackgroundColor,
-      backgroundColor: Colors.white,
-      appBar: width > webScreenSize
-          ? null
-          : AppBar(
-              title: const Text('Request Live'),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.exit_to_app),
-                  onPressed: () {
-                    _confirmSignOut(context);
-                  },
-                ),
-              ],
+    return _isLoading
+        ? const Center(
+            child: CircularProgressIndicator(
+              color: Colors.white,
             ),
-      drawer: width < webScreenSize ? null : const AppDrawer(),
-      body: PageView(
-        children: homeScreenItems,
-        controller: pageController,
-        onPageChanged: onPageChanged,
-      ),
-      bottomNavigationBar: CupertinoTabBar(
-        backgroundColor: mobileBackgroundColor,
-        items: [
-          // Feed Screen
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home,
-                color: (_page == 0) ? primaryColor : secondaryColor),
-            label: '',
-            backgroundColor: primaryColor,
-          ),
-          // Search Screen
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search,
-                color: (_page == 1) ? primaryColor : secondaryColor),
-            label: '',
-            backgroundColor: primaryColor,
-          ),
-          // Profile Screen
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person,
-                color: (_page == 2) ? primaryColor : secondaryColor),
-            label: '',
-            backgroundColor: primaryColor,
-          ),
-        ],
-        onTap: navigationTapped,
-        currentIndex: _page,
-      ),
-    );
+          )
+        : Scaffold(
+            key: _scaffoldKey,
+            // backgroundColor: width > webScreenSize ? webBackgroundColor : mobileBackgroundColor,
+            backgroundColor: Colors.white,
+            appBar: width > webScreenSize
+                ? null
+                : AppBar(
+                    title: const Text('Request Live'),
+                    actions: [
+                      IconButton(
+                        icon: const Icon(Icons.exit_to_app),
+                        onPressed: () {
+                          _confirmSignOut(context);
+                        },
+                      ),
+                    ],
+                  ),
+            drawer: width < webScreenSize ? null : const AppDrawer(),
+            body: PageView(
+              children: homeScreenItems,
+              controller: pageController,
+              onPageChanged: onPageChanged,
+            ),
+            bottomNavigationBar: CupertinoTabBar(
+              backgroundColor: mobileBackgroundColor,
+              items: [
+                // Feed Screen
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home,
+                      color: (_page == 0) ? primaryColor : secondaryColor),
+                  label: '',
+                  backgroundColor: primaryColor,
+                ),
+                // Search Screen
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.search,
+                      color: (_page == 1) ? primaryColor : secondaryColor),
+                  label: '',
+                  backgroundColor: primaryColor,
+                ),
+                // Profile Screen
+
+                !_isEntertainer
+                    ? BottomNavigationBarItem(
+                        icon: Icon(Icons.person,
+                            color:
+                                (_page == 2) ? primaryColor : secondaryColor),
+                        label: '',
+                        backgroundColor: primaryColor,
+                      )
+                    : BottomNavigationBarItem(
+                        icon: Icon(Icons.list,
+                            color:
+                                (_page == 2) ? primaryColor : secondaryColor),
+                        label: '',
+                        backgroundColor: primaryColor,
+                      ),
+                if (_isEntertainer)
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.person,
+                        color: (_page == 3) ? primaryColor : secondaryColor),
+                    label: '',
+                    backgroundColor: primaryColor,
+                  ),
+              ],
+              onTap: navigationTapped,
+              currentIndex: _page,
+            ),
+          );
   }
 
   _confirmSignOut(BuildContext context) {

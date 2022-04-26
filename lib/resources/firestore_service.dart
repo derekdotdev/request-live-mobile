@@ -95,6 +95,15 @@ class FirestoreService {
         .snapshots();
   }
 
+  // TODO make sure orderBy shows most recent at top!
+  Stream<QuerySnapshot<Map<String, dynamic>>> requestSnapshotStream(
+      {required String path}) {
+    return FirebaseFirestore.instance
+        .collection(path)
+        // .orderBy('timestamp')
+        .snapshots();
+  }
+
   Stream<List<T>> entertainerCollectionStream<T>({
     required String path,
     required T Function(Map<String, dynamic> data) builder,

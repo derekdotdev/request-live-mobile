@@ -24,6 +24,8 @@ changed to true.
 
  */
 
+// TODO go through this and remove all unused methods!
+
 class FirestoreDatabase {
   FirestoreDatabase({required this.uid});
   final String uid;
@@ -36,10 +38,9 @@ class FirestoreDatabase {
   }
 
   // Method to retrieve user data for profile screen (in use)
-  Future<DocumentSnapshot<Map<String, dynamic>>> userData(
-      String userUid) async {
+  Future<DocumentSnapshot<Map<String, dynamic>>> getUserData() async {
     final userSnap =
-        await _firestoreService.getUserSnap(path: FirestorePath.user(userUid));
+        await _firestoreService.getUserSnap(path: FirestorePath.user(uid));
     return userSnap;
   }
 
@@ -85,6 +86,8 @@ class FirestoreDatabase {
         path: FirestorePath.request(uid, request.uid));
   }
 
+  // Method to retrieve all
+
   // Method to retrieve all entertainers for feed screen (in use)
   Stream<QuerySnapshot<Map<String, dynamic>>> entertainerSnapshotStream() =>
       _firestoreService.entertainerSnapshotStream(
@@ -101,6 +104,12 @@ class FirestoreDatabase {
   Stream<List<Request>> requestsStream() => _firestoreService.collectionStream(
         path: FirestorePath.requests(uid),
         builder: (data, documentId) => Request.fromMap(data, documentId),
+      );
+
+  // Method to retrieve all requests made to the same entertainer based on uid
+  Stream<QuerySnapshot<Map<String, dynamic>>> requestSnapshotStream() =>
+      _firestoreService.requestSnapshotStream(
+        path: FirestorePath.requests(uid),
       );
 
   // Method to mark all requests as played

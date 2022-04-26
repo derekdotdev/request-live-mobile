@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:request_live/constants/colors.dart';
@@ -26,13 +29,15 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   var userData = {};
+  var userDetails = {};
   int postLen = 0;
   int followers = 0;
   int following = 0;
   bool isFollowing = false;
-  bool isLoading = false;
+  bool _isLoading = false;
   late FirestoreDatabase firestoreDatabase;
-  Uri photoUrl = Uri.parse("https://i.stack.imgur.com/l60Hf.png");
+  Uri photoUrl = Uri.parse('https://i.stack.imgur.com/l60Hf.png');
+  Uint8List? _image;
 
   @override
   void initState() {
@@ -47,13 +52,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.dispose();
   }
 
+  void updateUserImage(AuthProvider authProvider, String uid) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+
+    String result =
+        await authProvider.updateUserProfileImage(userUid: uid, file: _image!);
+  }
+
+  selectImage() async {
+    Uint8List im = await pickImage(ImageSource.gallery);
+    // set state to display the image selected on the circle avatar
+    setState(() {
+      _image = im;
+    });
+  }
+
   getData() async {
     setState(() {
-      isLoading = true;
+      _isLoading = true;
     });
 
     try {
-      var userSnap = await firestoreDatabase.userData(widget.uid);
+      var userSnap = await firestoreDatabase.getUserData();
       userData = userSnap.data()!;
     } catch (e) {
       showSnackBar(
@@ -62,7 +86,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       );
     }
     setState(() {
-      isLoading = false;
+      _isLoading = false;
     });
   }
 
@@ -73,7 +97,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final firestoreDatabase = Provider.of<FirestoreDatabase>(context);
     var userDetails = firestoreDatabase.getUserDetails();
 
-    return isLoading
+    return _isLoading
         ? const Center(
             child: CircularProgressIndicator(),
           )
@@ -114,6 +138,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       Row(
                         children: [
+                          // TODO Add ability to change profile image
+                          // Stack(
+                          //   children: [
+                          //     userData['photo_url'] == null
+                          //         ? CircleAvatar(
+                          //             radius: 40,
+                          //             backgroundImage: MemoryImage(_image!),
+                          //             backgroundColor: Colors.red,
+                          //           )
+                          //         : CircleAvatar(
+                          //             radius: 40,
+                          //             backgroundImage:
+                          //                 NetworkImage(photoUrl.toString()),
+                          //             backgroundColor: Colors.red,
+                          //           ),
+                          //     Positioned(
+                          //       bottom: -10,
+                          //       left: 80,
+                          //       child: IconButton(
+                          //         onPressed: selectImage,
+                          //         icon: const Icon(
+                          //           Icons.add_a_photo,
+                          //           color: Colors.black,
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
                           CircleAvatar(
                             backgroundColor: Colors.grey,
                             backgroundImage: userData['photo_url'] != null
