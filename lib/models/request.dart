@@ -9,7 +9,7 @@ class Request {
   final String requesterUsername;
   final String requesterPhotoUrl;
   final String entertainerId;
-  final bool played;
+  bool played;
   final Timestamp timestamp;
 
   Request({
@@ -24,6 +24,10 @@ class Request {
     required this.played,
     required this.timestamp,
   });
+
+  void togglePlayed() {
+    played = !played;
+  }
 
   static Request fromSnap(DocumentSnapshot snap) {
     var snapshot = snap.data() as Map<String, dynamic>;

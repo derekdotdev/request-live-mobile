@@ -7,8 +7,10 @@ import './flavor.dart';
 import './my_app.dart';
 import './providers/auth_provider.dart';
 import './providers/language_provider.dart';
+import './providers/request_provider.dart';
 import './providers/theme_provider.dart';
 import './resources/firestore_database.dart';
+
 import 'firebase_options.dart';
 
 void main() {
@@ -31,6 +33,9 @@ void main() {
           ),
           ChangeNotifierProvider<LanguageProvider>(
             create: (context) => LanguageProvider(),
+          ),
+          ChangeNotifierProvider<RequestProvider>(
+            create: (context) => RequestProvider(),
           ),
           // ChangeNotifierProvider<EntertainerProvider>(
           //   create: (context) => EntertainerProvider(),

@@ -6,6 +6,8 @@ import 'package:request_live/constants/global_variables.dart';
 
 import '../../constants/colors.dart';
 import '../../models/request.dart';
+import '../../providers/request_provider.dart';
+import '../../resources/conversions.dart';
 import '../drawer/app_drawer.dart';
 import '../../providers/auth_provider.dart';
 
@@ -32,36 +34,269 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.width;
     final authProvider = Provider.of<AuthProvider>(context);
-
+    final requestProvider =
+        Provider.of<RequestProvider>(context, listen: false);
     final args =
         ModalRoute.of(context)!.settings.arguments as RequestDetailScreenArgs;
+    var _isPlayed = args.request.played;
+    late bool _played;
+    var _isLoading = false;
 
-    return Scaffold(
-      backgroundColor:
-          width > webScreenSize ? webBackgroundColor : mobileBackgroundColor,
-      appBar: width > webScreenSize
-          ? null
-          : AppBar(
-              title: const Text(
-                'Request Details',
+    void updatePlayedStatus() {
+      setState(() {
+        _isLoading = true;
+      });
+      requestProvider.updateRequestPlayed(args.request);
+      setState(() {
+        _isLoading = false;
+      });
+    }
+
+    return _isLoading
+        ? const Center(
+            child: CircularProgressIndicator(
+              color: Colors.white,
+            ),
+          )
+        : Scaffold(
+            backgroundColor: width > webScreenSize
+                ? webBackgroundColor
+                : mobileBackgroundColor,
+            appBar: width > webScreenSize
+                ? null
+                : AppBar(
+                    title: const Text(
+                      'Request Details',
+                    ),
+                  ),
+            // drawer: AppDrawer(),
+            body: SingleChildScrollView(
+              child: SizedBox(
+                width: width,
+                child: Padding(
+                  padding: const EdgeInsets.all(32.0),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Card(
+                          elevation: 4,
+                          color: webBackgroundColor,
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: CircleAvatar(
+                                  radius: 48,
+                                  backgroundImage: NetworkImage(
+                                    args.request.requesterPhotoUrl,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 8,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 16.0),
+                                child: Text(
+                                  args.request.requesterUsername,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 32,
+                        ),
+                        Card(
+                          elevation: 4,
+                          color: webBackgroundColor,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: RequestRowOld(
+                                  section: 'Artist: ',
+                                  details: args.request.artist,
+                                  maxLines: 1,
+                                ),
+                              ),
+                              const Divider(),
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: RequestRowOld(
+                                  section: 'Title: ',
+                                  details: args.request.title,
+                                  maxLines: 1,
+                                ),
+                              ),
+                              const Divider(),
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: RequestColumn(
+                                  section: 'Notes: ',
+                                  details: args.request.notes,
+                                  maxLines: 3,
+                                ),
+                              ),
+                              const Divider(),
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: RequestRowOld(
+                                  section: 'Time: ',
+                                  details: Conversions.convertTimeStamp(
+                                      args.request.timestamp),
+                                  maxLines: 1,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 32,
+                        ),
+                        Card(
+                          elevation: 4,
+                          color: webBackgroundColor,
+                          child: Column(
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.only(
+                                  top: 16,
+                                  left: 16,
+                                  right: 16,
+                                ),
+                                child: Text(
+                                  'Did you play it??',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0),
+                                child: Switch.adaptive(
+                                  value: _isPlayed,
+                                  activeColor: Colors.orangeAccent,
+                                  onChanged: (value) {
+                                    updatePlayedStatus();
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
-      // drawer: AppDrawer(),
-      body: SizedBox(
-        width: width,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // EntertainerBio(),
-              // NewRequestForm(_isLoading, _sendRequest),
-            ],
+          );
+  }
+}
+
+class RequestColumn extends StatelessWidget {
+  final String section;
+  final String details;
+  final int maxLines;
+
+  const RequestColumn({
+    Key? key,
+    required this.section,
+    required this.details,
+    required this.maxLines,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      // mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Flexible(
+          child: Text(
+            section,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
         ),
-      ),
+        Flexible(
+          // flex: 2,
+          child: Text(
+            details == '' ? 'none' : details,
+            overflow: TextOverflow.ellipsis,
+            maxLines: maxLines,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class RequestRowOld extends StatelessWidget {
+  final String section;
+  final String details;
+  final int maxLines;
+
+  const RequestRowOld({
+    Key? key,
+    required this.section,
+    required this.details,
+    required this.maxLines,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      // crossAxisAlignment: CrossAxisAlignment.start,
+      // mainAxisSize: MainAxisSize.max,
+      children: [
+        Flexible(
+          child: Text(
+            section,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ),
+        Flexible(
+          flex: 2,
+          child: Text(
+            details == '' ? 'none' : details,
+            overflow: TextOverflow.ellipsis,
+            maxLines: maxLines,
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

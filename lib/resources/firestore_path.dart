@@ -8,7 +8,7 @@ This class works together with FirestoreService and FirestoreDatabase.
 class FirestorePath {
   // Specific request sent to an entertainer
   static String request(String entertainerId, String requestId) =>
-      'entertainers/$entertainerId/request/$requestId';
+      'entertainers/$entertainerId/requests/$requestId';
 
   // All requests sent to an entertainer
   static String requests(String entertainerId) =>

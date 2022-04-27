@@ -76,7 +76,7 @@ class FirestoreDatabase {
 
   // Method to create/update requestModel
   Future<void> setRequest(Request request) async => await _firestoreService.set(
-        path: FirestorePath.request(uid, request.uid),
+        path: FirestorePath.request(request.entertainerId, request.uid),
         data: request.toMap(),
       );
 

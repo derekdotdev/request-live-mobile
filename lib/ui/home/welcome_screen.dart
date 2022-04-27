@@ -64,8 +64,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   @override
   void dispose() {
-    pageController.dispose();
     super.dispose();
+    pageController.dispose();
   }
 
   void onPageChanged(int page) {
