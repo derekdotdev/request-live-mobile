@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 
+import '../../resources/firestore_database.dart';
 import 'entertainer_bio.dart';
 import 'new_request_form.dart';
 import '../drawer/app_drawer.dart';
@@ -25,6 +26,7 @@ class EntertainerScreen extends StatefulWidget {
 
 class _EntertainerScreenState extends State<EntertainerScreen> {
   final _isLoading = false;
+  var userData = {};
 
   @override
   void initState() {
@@ -33,10 +35,11 @@ class _EntertainerScreenState extends State<EntertainerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
-
     final args =
         ModalRoute.of(context)!.settings.arguments as EntertainerScreenArgs;
+
+    final firestoreDatabase =
+        Provider.of<FirestoreDatabase>(context, listen: false);
 
     Future<void> _sendRequest(
       String artist,
@@ -44,38 +47,39 @@ class _EntertainerScreenState extends State<EntertainerScreen> {
       String notes,
       BuildContext ctx,
     ) async {
-      final authUser = authProvider.user.map((event) => event.uid);
-      final user = FirebaseAuth.instance.currentUser;
+      var userSnap = await firestoreDatabase.getUserData();
+      userData = userSnap.data()!;
+
       // Hide soft keyboard
       FocusScope.of(context).unfocus();
 
+      // TODO do this right! Use firestore path, service, database
       // Persist request to database
       try {
-        if (user == null) {
-          print('authProvider.user == null!');
-        } else {
-          await FirebaseFirestore.instance
-              .collection('entertainers')
-              .doc(args.entertainerUid)
-              .collection('requests')
-              .add(
-            {
-              'artist': artist,
-              'title': title,
-              'notes': notes,
-              'requested_by': user.uid,
-              'entertainer_id': args.entertainerUid,
-              'timestamp': Timestamp.now(),
-            },
-          );
+        await FirebaseFirestore.instance
+            .collection('entertainers')
+            .doc(args.entertainerUid)
+            .collection('requests')
+            .add(
+          {
+            'artist': artist,
+            'title': title,
+            'notes': notes,
+            'requester_id': userData['uid'],
+            'requester_username': userData['username'],
+            'requester_photo_url': userData['photo_url'],
+            'entertainer_id': args.entertainerUid,
+            'played': false,
+            'timestamp': Timestamp.now(),
+          },
+        );
 
-          ScaffoldMessenger.of(ctx).showSnackBar(
-            const SnackBar(
-              content: Text('Your request has been sent!'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        }
+        ScaffoldMessenger.of(ctx).showSnackBar(
+          const SnackBar(
+            content: Text('Your request has been sent!'),
+            backgroundColor: Colors.green,
+          ),
+        );
       } catch (err) {
         ScaffoldMessenger.of(ctx).showSnackBar(
           SnackBar(

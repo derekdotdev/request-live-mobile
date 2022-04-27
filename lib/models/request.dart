@@ -6,6 +6,8 @@ class Request {
   final String title;
   final String notes;
   final String requesterId;
+  final String requesterUsername;
+  final String requesterPhotoUrl;
   final String entertainerId;
   final bool played;
   final Timestamp timestamp;
@@ -16,6 +18,8 @@ class Request {
     required this.title,
     required this.notes,
     required this.requesterId,
+    required this.requesterUsername,
+    required this.requesterPhotoUrl,
     required this.entertainerId,
     required this.played,
     required this.timestamp,
@@ -29,8 +33,10 @@ class Request {
       artist: snapshot["artist"],
       title: snapshot["title"],
       notes: snapshot["notes"],
-      requesterId: snapshot["requesterId"],
-      entertainerId: snapshot["entertainerId"],
+      requesterId: snapshot["requester_id"],
+      requesterUsername: snapshot['requester_username'],
+      requesterPhotoUrl: snapshot['requester_photo_url'],
+      entertainerId: snapshot["entertainer_id"],
       played: snapshot["played"],
       timestamp: snapshot["timestamp"],
     );
@@ -42,6 +48,8 @@ class Request {
         'title': title,
         'notes': notes,
         'requester_id': requesterId,
+        'requester_username': requesterUsername,
+        'requester_photo_url': requesterPhotoUrl,
         'entertainer_id': entertainerId,
         'played': played,
         'timestamp': timestamp,
@@ -52,6 +60,8 @@ class Request {
     String title = data['title'];
     String notes = data['notes'];
     String requesterId = data['requester_id'];
+    String requesterUsername = data['requester_username'];
+    String requesterPhotoUrl = data['requester_photo_url'];
     String entertainerId = data['entertainer_id'];
     bool played = data['played'];
     Timestamp timestamp = data['timestamp'];
@@ -62,6 +72,8 @@ class Request {
       title: title,
       notes: notes,
       requesterId: requesterId,
+      requesterUsername: requesterUsername,
+      requesterPhotoUrl: requesterPhotoUrl,
       entertainerId: entertainerId,
       played: played,
       timestamp: timestamp,
@@ -75,6 +87,8 @@ class Request {
       'title': title,
       'notes': notes,
       'requester_id': requesterId,
+      'requester_username': requesterUsername,
+      'requester_photo_url': requesterPhotoUrl,
       'entertainer_id': entertainerId,
       'played': played,
       'timestamp': timestamp,

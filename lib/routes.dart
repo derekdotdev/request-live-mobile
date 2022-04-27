@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '/ui/requests/request_detail_screen.dart';
 import '/ui/auth/sign_in_screen.dart';
 import '/ui/auth/register_screen.dart';
 import '/ui/entertainer/entertainer_screen.dart';
@@ -15,6 +16,7 @@ class Routes {
   static const String entertainer = '/entertainer';
   static const String welcome = '/welcome';
   static const String requests = '/requests';
+  static const String requestDetail = '/request-detail';
 
   static final routes = <String, WidgetBuilder>{
     splash: (BuildContext context) => const SplashScreen(),
@@ -22,6 +24,7 @@ class Routes {
     register: (BuildContext context) => const RegisterScreen(),
     welcome: (BuildContext context) => const WelcomeScreen(),
     requests: (BuildContext context) => const RequestsScreen(),
+    requestDetail: (BuildContext context) => const RequestDetailScreen(),
     entertainer: (BuildContext context) => const EntertainerScreen(),
   };
 }

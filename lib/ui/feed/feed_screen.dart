@@ -20,9 +20,10 @@ class _FeedScreenState extends State<FeedScreen> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final _auth = Provider.of<AuthProvider>(context, listen: false);
     final firestoreDatabase =
         Provider.of<FirestoreDatabase>(context, listen: false);
+
+    final _auth = Provider.of<AuthProvider>(context, listen: false);
     final userDetails = firestoreDatabase.getUserDetails();
 
     return Scaffold(
@@ -59,7 +60,9 @@ class _FeedScreenState extends State<FeedScreen> {
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(
+                color: Colors.white,
+              ),
             );
           }
           return ListView.builder(

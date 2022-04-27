@@ -69,8 +69,8 @@ class _RequestsScreenState extends State<RequestsScreen> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final args =
-        ModalRoute.of(context)!.settings.arguments as RequestsScreenArgs;
+    // final args =
+    //     ModalRoute.of(context)!.settings.arguments as RequestsScreenArgs;
     final firestoreDatabase =
         Provider.of<FirestoreDatabase>(context, listen: false);
 
@@ -102,15 +102,21 @@ class _RequestsScreenState extends State<RequestsScreen> {
               ),
             );
           }
-          return ListView.builder(
-            itemCount: snapshot.data!.docs.length,
-            itemBuilder: (ctx, index) => Container(
-              margin: EdgeInsets.symmetric(
-                horizontal: width > webScreenSize ? width * 0.3 : 0,
-                vertical: width > webScreenSize ? 15 : 0,
-              ),
-              child: RequestCard(
-                snap: snapshot.data!.docs[index].data(),
+          return SizedBox(
+            width: double.infinity,
+            child: ListView.builder(
+              itemCount: snapshot.data!.docs.length,
+              reverse: true,
+              shrinkWrap: true,
+              itemBuilder: (ctx, index) => Container(
+                margin: EdgeInsets.symmetric(
+                  horizontal: width > webScreenSize ? width * 0.3 : 0,
+                  vertical: width > webScreenSize ? 15 : 0,
+                ),
+                child: RequestCard(
+                  requestId: snapshot.data!.docs[index].id,
+                  snap: snapshot.data!.docs[index].data(),
+                ),
               ),
             ),
           );

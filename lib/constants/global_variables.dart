@@ -7,6 +7,7 @@ import '../ui/feed/feed_screen.dart';
 import '../ui/home/welcome_screen.dart';
 import '../ui/entertainer/entertainer_screen.dart';
 import '../ui/profile/profile_screen.dart';
+import '../ui/requests/requests_screen.dart';
 import '../ui/search/search_screen.dart';
 
 const webScreenSize = 600;
@@ -14,6 +15,7 @@ const webScreenSize = 600;
 List<Widget> homeScreenItems = [
   const FeedScreen(),
   const SearchScreen(),
+  const RequestsScreen(),
   ProfileScreen(
     uid: FirebaseAuth.instance.currentUser!.uid,
   ),

@@ -100,7 +100,7 @@ class FirestoreService {
       {required String path}) {
     return FirebaseFirestore.instance
         .collection(path)
-        // .orderBy('timestamp')
+        .orderBy('timestamp')
         .snapshots();
   }
 
