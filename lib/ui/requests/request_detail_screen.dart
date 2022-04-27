@@ -72,17 +72,20 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
                     ),
                   ),
             // drawer: AppDrawer(),
-            body: SingleChildScrollView(
-              child: SizedBox(
-                width: width,
-                child: Padding(
-                  padding: const EdgeInsets.all(32.0),
-                  child: Center(
+            body: LayoutBuilder(
+              builder:
+                  (BuildContext context, BoxConstraints viewportConstraints) {
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: viewportConstraints.maxHeight,
+                    ),
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Card(
+                          margin: EdgeInsets.only(top: 16),
                           elevation: 4,
                           color: webBackgroundColor,
                           child: Column(
@@ -103,11 +106,7 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
                                 padding: const EdgeInsets.only(bottom: 16.0),
                                 child: Text(
                                   args.request.requesterUsername,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  style: kRequestDetailStyle,
                                 ),
                               ),
                             ],
@@ -177,11 +176,7 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
                                 ),
                                 child: Text(
                                   'Did you play it??',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  style: kRequestDetailStyle,
                                 ),
                               ),
                               Padding(
@@ -201,8 +196,8 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
                       ],
                     ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
           );
   }
@@ -230,11 +225,7 @@ class RequestColumn extends StatelessWidget {
         Flexible(
           child: Text(
             section,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+            style: kRequestDetailStyle,
           ),
         ),
         Flexible(
@@ -277,11 +268,7 @@ class RequestRowOld extends StatelessWidget {
         Flexible(
           child: Text(
             section,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+            style: kRequestDetailStyle,
           ),
         ),
         Flexible(
