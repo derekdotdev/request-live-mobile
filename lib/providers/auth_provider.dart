@@ -135,6 +135,7 @@ class AuthProvider extends ChangeNotifier {
           uid: result.user!.uid,
           email: email,
           username: username,
+          photoUrl: 'https://i.stack.imgur.com/l60Hf.png', // stock for now
           isEntertainer: isEntertainer,
           isLive: false,
         ),
@@ -219,6 +220,7 @@ class AuthProvider extends ChangeNotifier {
   Future signOut() async {
     _auth.signOut();
     _status = Status.unauthenticated;
+
     notifyListeners();
     return Future.delayed(Duration.zero);
   }

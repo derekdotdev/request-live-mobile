@@ -1,6 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:request_live/constants/global_variables.dart';
 
@@ -8,8 +6,6 @@ import '../../constants/colors.dart';
 import '../../models/request.dart';
 import '../../providers/request_provider.dart';
 import '../../resources/conversions.dart';
-import '../drawer/app_drawer.dart';
-import '../../providers/auth_provider.dart';
 
 class RequestDetailScreenArgs {
   final Request request;
@@ -24,8 +20,6 @@ class RequestDetailScreen extends StatefulWidget {
 }
 
 class _RequestDetailScreenState extends State<RequestDetailScreen> {
-  final _isLoading = false;
-
   @override
   void initState() {
     super.initState();
@@ -34,8 +28,6 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.width;
-    final authProvider = Provider.of<AuthProvider>(context);
     final requestProvider =
         Provider.of<RequestProvider>(context, listen: false);
     final args =

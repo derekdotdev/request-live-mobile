@@ -18,6 +18,7 @@ class _SignInScreenState extends State<SignInScreen> {
   late TextEditingController _passwordController;
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
+  Map<String, String> fieldValues = {};
 
   @override
   void initState() {
@@ -76,11 +77,16 @@ class _SignInScreenState extends State<SignInScreen> {
                   enableSuggestions: false,
                   style: Theme.of(context).textTheme.bodyText2,
                   validator: (value) {
-                    if (value == null) {
-                      return AppLocalizations.of(context)
-                          .translate("loginTxtErrorEmail");
+                    if (value != null && value.isNotEmpty) {
+                      return null;
                     }
-                    return null;
+                    return AppLocalizations.of(context)
+                        .translate("loginTxtErrorEmail");
+                  },
+                  onSaved: (value) {
+                    setState(() {
+                      fieldValues['email'] = value!;
+                    });
                   },
                   decoration: InputDecoration(
                       prefixIcon: Icon(
@@ -99,11 +105,16 @@ class _SignInScreenState extends State<SignInScreen> {
                     controller: _passwordController,
                     style: Theme.of(context).textTheme.bodyText2,
                     validator: (value) {
-                      if (value != null && value.length < 6) {
-                        return AppLocalizations.of(context)
-                            .translate("loginTxtErrorPassword");
+                      if (value != null && value.length > 6) {
+                        return null;
                       }
-                      return null;
+                      return AppLocalizations.of(context)
+                          .translate("loginTxtErrorPassword");
+                    },
+                    onSaved: (value) {
+                      setState(() {
+                        fieldValues['password'] = value!;
+                      });
                     },
                     decoration: InputDecoration(
                         prefixIcon: Icon(
@@ -128,24 +139,27 @@ class _SignInScreenState extends State<SignInScreen> {
                           style: Theme.of(context).textTheme.button,
                         ),
                         onPressed: () async {
-                          if (_formKey.currentState!.validate()) {
-                            FocusScope.of(context)
-                                .unfocus(); //to hide the keyboard - if any
+                          if (_formKey.currentState != null) {
+                            if (_formKey.currentState!.validate()) {
+                              _formKey.currentState!.save();
+                              FocusScope.of(context)
+                                  .unfocus(); //to hide the keyboard - if any
 
-                            bool status =
-                                await authProvider.signInWithEmailAndPassword(
-                                    _emailController.text,
-                                    _passwordController.text);
+                              bool status =
+                                  await authProvider.signInWithEmailAndPassword(
+                                      fieldValues['email'].toString(),
+                                      fieldValues['password'].toString());
 
-                            if (!status) {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
-                                content: Text(AppLocalizations.of(context)
-                                    .translate("loginTxtErrorSignIn")),
-                              ));
-                            } else {
-                              Navigator.of(context)
-                                  .pushReplacementNamed(Routes.welcome);
+                              if (!status) {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(
+                                  content: Text(AppLocalizations.of(context)
+                                      .translate("loginTxtErrorSignIn")),
+                                ));
+                              } else {
+                                Navigator.pushReplacementNamed(
+                                    context, Routes.welcome);
+                              }
                             }
                           }
                         }),

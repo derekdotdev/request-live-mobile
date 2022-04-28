@@ -44,10 +44,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_isInit) {
-      firestoreDatabase =
-          Provider.of<FirestoreDatabase>(context, listen: false);
-      getUserData(firestoreDatabase);
+    if (mounted) {
+      if (_isInit) {
+        firestoreDatabase =
+            Provider.of<FirestoreDatabase>(context, listen: false);
+        getUserData(firestoreDatabase);
+      }
     }
   }
 
@@ -187,7 +189,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
               authProvider.signOut();
 
-              Navigator.pop(context);
+              // Navigator.pop(context);
               Navigator.of(context).pushNamedAndRemoveUntil(
                   Routes.login, ModalRoute.withName(Routes.login));
             },

@@ -23,7 +23,7 @@ class _FeedScreenState extends State<FeedScreen> {
     final firestoreDatabase =
         Provider.of<FirestoreDatabase>(context, listen: false);
 
-    final _auth = Provider.of<AuthProvider>(context, listen: false);
+    final authProvider = Provider.of<AuthProvider>(context);
     final userDetails = firestoreDatabase.getUserDetails();
 
     return Scaffold(
@@ -43,15 +43,6 @@ class _FeedScreenState extends State<FeedScreen> {
                 ),
                 softWrap: true,
               ),
-              // actions: [
-              //   IconButton(
-              //     icon: const Icon(
-              //       Icons.messenger_outline,
-              //       color: primaryColor,
-              //     ),
-              //     onPressed: () {},
-              //   ),
-              // ],
             ),
       body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         // stream: FirebaseFirestore.instance.collection('users').snapshots(),
@@ -65,18 +56,26 @@ class _FeedScreenState extends State<FeedScreen> {
               ),
             );
           }
-          return ListView.builder(
-            itemCount: snapshot.data!.docs.length,
-            itemBuilder: (ctx, index) => Container(
-              margin: EdgeInsets.symmetric(
-                horizontal: width > webScreenSize ? width * 0.3 : 0,
-                vertical: width > webScreenSize ? 15 : 0,
-              ),
-              child: EntertainerCard(
-                snap: snapshot.data!.docs[index].data(),
-              ),
-            ),
-          );
+          return authProvider.status == Status.authenticated
+              ? ListView.builder(
+                  itemCount: snapshot.data!.docs.length,
+                  itemBuilder: (ctx, index) => Container(
+                    margin: EdgeInsets.symmetric(
+                      horizontal: width > webScreenSize ? width * 0.3 : 0,
+                      vertical: width > webScreenSize ? 15 : 0,
+                    ),
+                    child: EntertainerCard(
+                      snap: snapshot.hasData
+                          ? snapshot.data!.docs[index].data()
+                          : {},
+                    ),
+                  ),
+                )
+              : const Center(
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                  ),
+                );
         },
       ),
     );

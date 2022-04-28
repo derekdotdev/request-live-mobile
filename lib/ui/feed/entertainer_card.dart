@@ -33,22 +33,26 @@ class _EntertainerCardState extends State<EntertainerCard> {
   late String userImageUrl = widget.snap['photo_url'].toString();
   // late String stockPhotoUrl = 'request-live-4864a.appspot.com/user.png';
   late String stockPhotoUrl = 'https://i.stack.imgur.com/l60Hf.png';
+  final loggedInUser = FirebaseAuth.instance.currentUser;
+  late String userId;
   int commentLen = 0;
   bool isLikeAnimating = false;
 
   @override
   void initState() {
     super.initState();
+    userId = loggedInUser!.uid;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser!;
-    // final user = Provider.of<AuthProvider>(context, listen: false).user;
-    final width = MediaQuery.of(context).size.width;
-
     // Do not display current user's EntertainerCard
-    return widget.snap['uid'] == FirebaseAuth.instance.currentUser!.uid
+    return widget.snap['uid'] == userId
         ? Container()
         : widget.snap['is_entertainer'] == false
             ? Container()

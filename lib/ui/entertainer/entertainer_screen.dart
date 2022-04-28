@@ -67,7 +67,7 @@ class _EntertainerScreenState extends State<EntertainerScreen> {
             'notes': notes,
             'requester_id': userData['uid'],
             'requester_username': userData['username'],
-            'requester_photo_url': userData['photo_url'],
+            'requester_photo_url': userData['photo_url'] ?? 'null',
             'entertainer_id': args.entertainerUid,
             'played': false,
             'timestamp': Timestamp.now(),
