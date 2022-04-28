@@ -80,10 +80,15 @@ class FirestoreDatabase {
         data: request.toMap(),
       );
 
-  // Method to delete request entry
+  // Methods to delete requests via Request and Request Id
   Future<void> deleteRequest(Request request) async {
     await _firestoreService.deleteData(
         path: FirestorePath.request(uid, request.uid));
+  }
+
+  Future<void> deleteRequestById(String requestId) async {
+    await _firestoreService.deleteData(
+        path: FirestorePath.request(uid, requestId));
   }
 
   // Method to retrieve all

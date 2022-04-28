@@ -18,6 +18,14 @@ class RequestProvider extends ChangeNotifier {
     return requestsListMain.length;
   }
 
+  void deleteRequest(Request request) {
+    FirestoreDatabase(uid: request.entertainerId).deleteRequest(request);
+  }
+
+  void deleteRequestById(String entertainerId, String requestId) {
+    FirestoreDatabase(uid: entertainerId).deleteRequestById(requestId);
+  }
+
   void updateRequestPlayed(Request request) {
     // Toggle played on local instance of request
     request.togglePlayed();

@@ -7,6 +7,7 @@ import 'package:request_live/constants/colors.dart';
 import 'package:request_live/ui/requests/request_card.dart';
 
 import '../../constants/global_variables.dart';
+import '../../providers/request_provider.dart';
 import '../../resources/firestore_database.dart';
 
 class RequestsScreenArgs {
@@ -69,10 +70,38 @@ class _RequestsScreenState extends State<RequestsScreen> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    // final args =
-    //     ModalRoute.of(context)!.settings.arguments as RequestsScreenArgs;
     final firestoreDatabase =
         Provider.of<FirestoreDatabase>(context, listen: false);
+    final requestProvider =
+        Provider.of<RequestProvider>(context, listen: false);
+
+    Future<bool?> _showConfirmationDialog(BuildContext context, String action) {
+      return showDialog<bool>(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Are you sure you want to $action this item?'),
+            actions: [
+              TextButton.icon(
+                label: const Text('Yes'),
+                icon: const Icon(Icons.check),
+                onPressed: () {
+                  Navigator.pop(context, true);
+                },
+              ),
+              TextButton.icon(
+                label: const Text('No'),
+                icon: const Icon(Icons.cancel),
+                onPressed: () {
+                  Navigator.pop(context, false);
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
 
     return Scaffold(
       backgroundColor:
@@ -113,9 +142,38 @@ class _RequestsScreenState extends State<RequestsScreen> {
                   horizontal: width > webScreenSize ? width * 0.3 : 0,
                   vertical: width > webScreenSize ? 15 : 0,
                 ),
-                child: RequestCard(
-                  requestId: snapshot.data!.docs[index].id,
-                  snap: snapshot.data!.docs[index].data(),
+                child: Dismissible(
+                  key: ValueKey<int>(index),
+                  direction: DismissDirection.endToStart,
+                  background: Container(
+                    color: Colors.red,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: const [
+                        Padding(
+                          padding: EdgeInsets.only(right: 16.0),
+                          child: Icon(
+                            Icons.delete,
+                            color: Colors.white,
+                            textDirection: TextDirection.rtl,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  onDismissed: (DismissDirection direction) =>
+                      requestProvider.deleteRequestById(
+                          snapshot.data!.docs[index]
+                              .data()['entertainer_id']
+                              .toString(),
+                          snapshot.data!.docs[index].id),
+                  confirmDismiss: (DismissDirection direction) =>
+                      _showConfirmationDialog(context, 'delete'),
+                  child: RequestCard(
+                    requestId: snapshot.data!.docs[index].id,
+                    snap: snapshot.data!.docs[index].data(),
+                  ),
                 ),
               ),
             ),

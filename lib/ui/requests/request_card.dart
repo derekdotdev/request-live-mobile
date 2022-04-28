@@ -47,13 +47,9 @@ class _RequestCardState extends State<RequestCard> {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-
     // Do not display current user's EntertainerCard
     return GestureDetector(
-      // key: Key(widget.snap['uid']),
       child: Container(
-        // height: 400,
         width: double.infinity,
         margin: const EdgeInsets.all(8),
         child: Padding(
