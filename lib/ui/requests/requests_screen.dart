@@ -162,12 +162,14 @@ class _RequestsScreenState extends State<RequestsScreen> {
                       ],
                     ),
                   ),
-                  onDismissed: (DismissDirection direction) =>
-                      requestProvider.deleteRequestById(
-                          snapshot.data!.docs[index]
-                              .data()['entertainer_id']
-                              .toString(),
-                          snapshot.data!.docs[index].id),
+                  onDismissed: (DismissDirection direction) async {
+                    requestProvider.deleteRequestById(
+                        snapshot.data!.docs[index]
+                            .data()['entertainer_id']
+                            .toString(),
+                        snapshot.data!.docs[index].id);
+                    await snapshot.data!.docs[index].reference.delete();
+                  },
                   confirmDismiss: (DismissDirection direction) =>
                       _showConfirmationDialog(context, 'delete'),
                   child: RequestCard(
